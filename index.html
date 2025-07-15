@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테토-에겐 성격 유형 테스트</title>
+    <style>
+        /* Body styles: Centers the content vertically and horizontally, sets basic font and background */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .container {
+            background-color: #3a3a3a;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode #question-text {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode #options-container button {
+            background-color: #4a4a4a;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode #options-container button:hover {
+            background-color: #5a5a5a;
+            border-color: #888;
+        }
+
+        body.dark-mode #options-container button.selected {
+            background-color: #0056b3; /* Darker blue for selected in dark mode */
+            border-color: #0056b3;
+            color: #fff;
+        }
+
+        body.dark-mode .gender-button {
+            background-color: #0056b3;
+        }
+
+        body.dark-mode .gender-button:hover {
+            background-color: #003f80;
+        }
+
+        body.dark-mode #female-button {
+            background-color: #c45293; /* Darker pink for female in dark mode */
+        }
+
+        body.dark-mode #female-button:hover {
+            background-color: #a3427a;
+        }
+
+        body.dark-mode button#restart-button {
+            background-color: #1e7e34;
+        }
+
+        body.dark-mode button#restart-button:hover {
+            background-color: #155d28;
+        }
+
+        body.dark-mode #result-section h2 {
+            color: #66b3ff; /* Lighter blue for result heading in dark mode */
+        }
+
+        body.dark-mode #result-type {
+            color: #ff9999; /* Lighter red for result type in dark mode */
+        }
+
+        body.dark-mode #result-description {
+            color: #c0c0c0;
+        }
+
+        /* Container for the entire test application */
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            position: relative; /* For canvas positioning */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Main title of the test */
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            font-size: 2em;
+            transition: color 0.3s ease;
+        }
+
+        /* Sections for gender selection, quiz, and result, with internal padding */
+        #gender-selection-section, #quiz-section, #result-section {
+            padding: 20px 0;
+        }
+
+        /* Styles for gender selection buttons */
+        .gender-button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.5em;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .gender-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Specific color for the female gender button */
+        #female-button {
+            background-color: #ff69b4; /* Pink color for female */
+        }
+
+        #female-button:hover {
+            background-color: #e0569d; /* Darker pink on hover */
+        }
+
+        /* Container for the progress bar (canvas + text) */
+        #progress-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px; /* Center alignment and bottom margin */
+            position: relative;
+        }
+
+        /* Canvas element for drawing the progress circle */
+        #progress-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Text displaying current question number / total questions */
+        #progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Style for the question text */
+        #question-text {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        /* Styles for the answer buttons */
+        #options-container button {
+            display: block; /* Each button on a new line */
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-sizing: border-box; /* Include padding in width calculation */
+            display: flex; /* Use flexbox for button content alignment */
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Space between text and emoji */
+        }
+
+        /* Hover effect for answer buttons */
+        #options-container button:hover {
+            background-color: #e8f0fe;
+            border-color: #a0c4ff;
+        }
+
+        /* Style for the selected answer button */
+        #options-container button.selected {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        /* Styles for the 'Restart' button */
+        button#restart-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background-color 0.3s ease;
+            display: flex; /* Use flexbox for button content alignment */
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Space between text and emoji */
+            margin-left: auto; /* Center the button */
+            margin-right: auto;
+        }
+
+        /* Hover effect for 'Restart' button */
+        button#restart-button:hover {
+            background-color: #218838;
+        }
+
+        /* Style for the result section heading */
+        #result-section h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        /* Style for the determined personality type */
+        #result-type {
+            font-size: 2.2em;
+            color: #ff6f61; /* Color suitable for Tet-Egen theme */
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: flex; /* Use flexbox for text and emoji alignment */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between text and emoji */
+            transition: color 0.3s ease;
+        }
+
+        /* Style for the description of the personality type */
+        #result-description {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #666;
+            margin-bottom: 30px;
+            text-align: left; /* Align description text to left */
+            transition: color 0.3s ease;
+        }
+
+        /* Language and Theme controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .controls select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .controls select {
+            background-color: #4a4a4a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        .theme-toggle-button {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #4a4a4a; /* Default icon color */
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle-button {
+            color: #f0f0f0; /* Dark mode icon color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <select id="language-select">
+                <option value="ko">한국어 🇰🇷</option>
+                <option value="en">English 🇬🇧</option>
+                <option value="zh">中文 🇨🇳</option>
+                <option value="ja">日本語 🇯🇵</option>
+                <option value="es">Español 🇪🇸</option>
+            </select>
+            <button id="theme-toggle" class="theme-toggle-button">☀️</button>
+        </div>
+
+        <h1 id="main-title">테토-에겐 성격 유형 테스트 ✨</h1>
+
+        <!-- Gender Selection Section -->
+        <div id="gender-selection-section">
+            <h2 id="gender-selection-title">당신의 성별을 선택해주세요. </h2>
+            <button id="male-button" class="gender-button">남성 ♂️</button>
+            <button id="female-button" class="gender-button">여성 ♀️</button>
+        </div>
+
+        <!-- Quiz Section (initially hidden) -->
+        <div id="quiz-section" style="display: none;">
+            <div id="progress-container">
+                <canvas id="progress-canvas" width="80" height="80"></canvas>
+                <div id="progress-text"></div>
+            </div>
+            <p id="question-text"></p>
+            <div id="options-container">
+                <!-- Answer buttons will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Result Section (initially hidden) -->
+        <div id="result-section" style="display: none;">
+            <h2 id="result-section-title">당신의 성격 유형은... 🎉</h2>
+            <h3 id="result-type"></h3>
+            <p id="result-description"></p>
+            <button id="restart-button">다시 테스트하기 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to DOM elements
+            const genderSelectionSection = document.getElementById('gender-selection-section');
+            const maleButton = document.getElementById('male-button');
+            const femaleButton = document.getElementById('female-button');
+            const quizSection = document.getElementById('quiz-section');
+            const resultSection = document.getElementById('result-section');
+            const questionText = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const resultType = document.getElementById('result-type');
+            const resultDescription = document.getElementById('result-description');
+            const restartButton = document.getElementById('restart-button');
+            const languageSelect = document.getElementById('language-select');
+            const themeToggle = document.getElementById('theme-toggle');
+            const mainTitle = document.getElementById('main-title');
+            const genderSelectionTitle = document.getElementById('gender-selection-title');
+            const resultSectionTitle = document.getElementById('result-section-title');
+
+            // Canvas elements for progress bar
+            const progressCanvas = document.getElementById('progress-canvas');
+            const ctx = progressCanvas.getContext('2d');
+            const canvasSize = 80;
+            const centerX = canvasSize / 2;
+            const centerY = canvasSize / 2;
+            const radius = 30;
+
+            // State variables for the quiz
+            let currentQuestionIndex = 0;
+            let scores = {
+                'teto_score': 0,
+                'egen_score': 0,
+                'masculine_score': 0,
+                'feminine_score': 0
+            };
+            let selectedOption = null;
+            let userGender = ''; // To store selected gender: '남' or '여'
+            let currentLanguage = localStorage.getItem('language') || 'ko'; // Default to Korean or saved preference
+            let currentTheme = localStorage.getItem('theme') || 'light'; // Default to light or saved preference
+
+            // --- Teto-Egen Personality Type Test Questions (with scores) ---
+            // This array holds the core logic for scoring, independent of display language.
+            const questions = [
+                {
+                    options: [
+                        { text: "구체적인 목표와 마감 기한을 세우고, 필요한 자원부터 파악합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "가능한 모든 아이디어를 브레인스토밍하고, 흥미로운 방향을 모색합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "기존의 성공 사례를 분석하고, 이를 바탕으로 개선점을 찾습니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 1, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "가장 효율적이고 실현 가능한 해결책을 찾아 즉시 실행합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "문제의 근본 원인을 깊이 탐색하고, 창의적인 대안을 고민합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "관련 전문가의 의견을 듣고, 신중하게 접근합니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "계획을 세우고 그 계획에 따라 움직이며 예측 가능한 것을 좋아합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "즉흥적이고 유연하게 상황에 맞춰 움직이며 새로운 경험을 추구합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "큰 틀만 정해두고 세부 사항은 그때그때 결정합니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "논리적인 분석과 객관적인 데이터에 기반한 합리성.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "직관과 영감, 그리고 개인적인 가치에 따른 자유로움.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "주변 사람들의 의견을 충분히 듣고 결정합니다.", score: { 'teto_score': 0, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "해야 할 일을 더 완벽하게 처리하거나, 정리하며 통제감을 되찾으려 합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "새로운 취미를 찾거나, 흥미로운 활동을 통해 기분 전환을 시도합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "혼자만의 시간을 가지며 조용히 생각에 잠깁니다.", score: { 'teto_score': 0, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "주변을 관찰하고 정보를 수집하며, 적응할 방법을 모색합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "호기심을 가지고 탐색하며, 어떤 흥미로운 일이 생길지 기대합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "낯선 환경에 대해 약간의 불안감을 느끼지만, 곧 익숙해지려 노력합니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 0, 'feminine_score': 0 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "명확한 역할 분담과 효율적인 업무 처리.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "자유로운 의견 교환과 창의적인 시너지.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "서로 존중하며 조화롭게 협력하는 분위기.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "단계별 목표를 설정하고, 달성 가능한 로드맵을 구상합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "다양한 가능성을 열어두고, 변화에 유연하게 대응할 준비를 합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "현재에 충실하며, 미래는 자연스럽게 흘러가는 대로 둡니다.", score: { 'teto_score': 0, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "친구 및 약속이 많고, 가만히 있는 것을 못 참으며 활동량이 많습니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 2, 'feminine_score': 0 } },
+                        { text: "혼자만의 시간을 중요하게 여기고, 움직임보다는 정적인 활동을 선호합니다.", score: { 'teto_score': 0, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 2 } },
+                        { text: "필요에 따라 활동적이고, 때로는 혼자만의 시간도 즐깁니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 1, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "큰 관심이 없거나, 간결하고 클래식한 스타일을 선호합니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 2, 'feminine_score': 0 } },
+                        { text: "트렌드에 민감하거나 미적 감각이 뛰어나며, SNS를 꾸미는 데 익숙합니다.", score: { 'teto_score': 0, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 2 } },
+                        { text: "편안함과 실용성을 가장 중요하게 생각합니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "회피하기보다 갈등을 직면하고 싸워서 해결하는 편입니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 2, 'feminine_score': 0 } },
+                        { text: "감정의 흐름에 민감하며, 섬세하고 공감적인 교류를 중시합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 2 } },
+                        { text: "갈등을 피하려 하지만, 필요하다면 대화를 통해 해결하려 노력합니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "감정보다는 행동으로 표현하며, 실질적인 보상을 제공하는 편입니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 2, 'feminine_score': 0 } },
+                        { text: "말이나 분위기로 감정을 전하며, 애교나 감성적 소통에 능합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 2 } },
+                        { text: "상대방의 필요에 따라 표현 방식을 조절합니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 1, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "새로운 기술이나 도구를 배우는 것을 즐깁니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "예술 작품을 감상하거나 창작하는 것에 흥미를 느낍니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "실용적인 지식을 습득하고 바로 적용하는 것을 좋아합니다.", score: { 'teto_score': 1, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "경쟁적인 환경에서 최고의 성과를 내는 것에 만족감을 느낍니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "협력적인 분위기에서 함께 성장하는 것을 중요하게 생각합니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "개인의 성과와 팀의 조화 모두를 추구합니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 1, 'feminine_score': 1 } }
+                    ]
+                },
+                {
+                    options: [
+                        { text: "여행 계획을 세울 때, 효율적인 동선과 숙소 예약을 최우선으로 합니다.", score: { 'teto_score': 2, 'egen_score': 0, 'masculine_score': 1, 'feminine_score': 0 } },
+                        { text: "새로운 문화를 경험하고, 예상치 못한 만남을 기대하며 떠납니다.", score: { 'teto_score': 0, 'egen_score': 2, 'masculine_score': 0, 'feminine_score': 1 } },
+                        { text: "유명한 관광지보다는 숨겨진 명소를 찾아다니는 것을 즐깁니다.", score: { 'teto_score': 1, 'egen_score': 1, 'masculine_score': 0, 'feminine_score': 1 } }
+                    ]
+                }
+            ];
+
+            // --- Translations for all UI text ---
+            const translations = {
+                'ko': {
+                    'main_title': '테토-에겐 성격 유형 테스트 ✨',
+                    'gender_selection_title': '당신의 성별을 선택해주세요.',
+                    'male_button': '남성 ♂️',
+                    'female_button': '여성 ♀️',
+                    'result_section_title': '당신의 성격 유형은... 🎉',
+                    'restart_button': '다시 테스트하기 🔄',
+                    'alert_select_option': '답변을 선택해주세요!',
+                    'option_emoji': '✔️', // Generic emoji for all options
+                    'ideal_partner_intro': '<br><br>❤️ 연애 먹이사슬에 따른 당신의 이상형은: ',
+                    'teto_score_label': '테토 성향 점수: ',
+                    'egen_score_label': '에겐 성향 점수: ',
+                    'questions': [
+                        { question: "새로운 프로젝트를 시작할 때, 당신의 첫 접근 방식은? 💡", options: [{ text: "구체적인 목표와 마감 기한을 세우고, 필요한 자원부터 파악합니다." }, { text: "가능한 모든 아이디어를 브레인스토밍하고, 흥미로운 방향을 모색합니다." }, { text: "기존의 성공 사례를 분석하고, 이를 바탕으로 개선점을 찾습니다." }] },
+                        { question: "문제가 발생했을 때, 당신은 어떻게 대응하나요? ❓", options: [{ text: "가장 효율적이고 실현 가능한 해결책을 찾아 즉시 실행합니다." }, { text: "문제의 근본 원인을 깊이 탐색하고, 창의적인 대안을 고민합니다." }, { text: "관련 전문가의 의견을 듣고, 신중하게 접근합니다." }] },
+                        { question: "일상생활에서 당신이 선호하는 방식은? 🤔", options: [{ text: "계획을 세우고 그 계획에 따라 움직이며 예측 가능한 것을 좋아합니다." }, { text: "즉흥적이고 유연하게 상황에 맞춰 움직이며 새로운 경험을 추구합니다." }, { text: "큰 틀만 정해두고 세부 사항은 그때그때 결정합니다." }] },
+                        { question: "의사결정을 내릴 때 당신에게 더 중요한 것은? ⚖️", options: [{ text: "논리적인 분석과 객관적인 데이터에 기반한 합리성." }, { text: "직관과 영감, 그리고 개인적인 가치에 따른 자유로움." }, { text: "주변 사람들의 의견을 충분히 듣고 결정합니다." }] },
+                        { question: "스트레스를 받을 때 당신은 주로 어떻게 해소하나요? 😌", options: [{ text: "해야 할 일을 더 완벽하게 처리하거나, 정리하며 통제감을 되찾으려 합니다." }, { text: "새로운 취미를 찾거나, 흥미로운 활동을 통해 기분 전환을 시도합니다." }, { text: "혼자만의 시간을 가지며 조용히 생각에 잠깁니다." }] },
+                        { question: "새로운 환경에 놓였을 때 당신의 첫 반응은? 🗺️", options: [{ text: "주변을 관찰하고 정보를 수집하며, 적응할 방법을 모색합니다." }, { text: "호기심을 가지고 탐색하며, 어떤 흥미로운 일이 생길지 기대합니다." }, { text: "낯선 환경에 대해 약간의 불안감을 느끼지만, 곧 익숙해지려 노력합니다." }] },
+                        { question: "사람들과 함께 일할 때 가장 중요하게 생각하는 것은? 🤝", options: [{ text: "명확한 역할 분담과 효율적인 업무 처리." }, { text: "자유로운 의견 교환과 창의적인 시너지." }, { text: "서로 존중하며 조화롭게 협력하는 분위기." }] },
+                        { question: "미래를 계획할 때 당신은 주로 어떤 그림을 그리나요? 🔮", options: [{ text: "단계별 목표를 설정하고, 달성 가능한 로드맵을 구상합니다." }, { text: "다양한 가능성을 열어두고, 변화에 유연하게 대응할 준비를 합니다." }, { text: "현재에 충실하며, 미래는 자연스럽게 흘러가는 대로 둡니다." }] },
+                        { question: "사회생활에서 당신의 모습은 주로 어떤가요? 👥", options: [{ text: "친구 및 약속이 많고, 가만히 있는 것을 못 참으며 활동량이 많습니다." }, { text: "혼자만의 시간을 중요하게 여기고, 움직임보다는 정적인 활동을 선호합니다." }, { text: "필요에 따라 활동적이고, 때로는 혼자만의 시간도 즐깁니다." }] },
+                        { question: "패션이나 외모 관리에 대한 당신의 생각은? 👕", options: [{ text: "큰 관심이 없거나, 간결하고 클래식한 스타일을 선호합니다." }, { text: "트렌드에 민감하거나 미적 감각이 뛰어나며, SNS를 꾸미는 데 익숙합니다." }, { text: "편안함과 실용성을 가장 중요하게 생각합니다." }] },
+                        { question: "연애 관계에서 갈등이 생겼을 때, 당신의 태도는? 💔", options: [{ text: "회피하기보다 갈등을 직면하고 싸워서 해결하는 편입니다." }, { text: "감정의 흐름에 민감하며, 섬세하고 공감적인 교류를 중시합니다." }, { text: "갈등을 피하려 하지만, 필요하다면 대화를 통해 해결하려 노력합니다." }] },
+                        { question: "애정 표현 방식은 주로 어떤가요? ❤️", options: [{ text: "감정보다는 행동으로 표현하며, 실질적인 보상을 제공하는 편입니다." }, { text: "말이나 분위기로 감정을 전하며, 애교나 감성적 소통에 능합니다." }, { text: "상대방의 필요에 따라 표현 방식을 조절합니다." }] },
+                        { question: "새로운 지식이나 기술을 접할 때, 당신은 어떤 태도를 보이나요? 🧠", options: [{ text: "새로운 기술이나 도구를 배우는 것을 즐깁니다." }, { text: "예술 작품을 감상하거나 창작하는 것에 흥미를 느낍니다." }, { text: "실용적인 지식을 습득하고 바로 적용하는 것을 좋아합니다." }] },
+                        { question: "업무나 프로젝트에서 당신이 추구하는 것은 무엇인가요? 🏆", options: [{ text: "경쟁적인 환경에서 최고의 성과를 내는 것에 만족감을 느낍니다." }, { text: "협력적인 분위기에서 함께 성장하는 것을 중요하게 생각합니다." }, { text: "개인의 성과와 팀의 조화 모두를 추구합니다." }] },
+                        { question: "여행 계획을 세울 때, 당신의 우선순위는? ✈️", options: [{ text: "효율적인 동선과 숙소 예약을 최우선으로 합니다." }, { text: "새로운 문화를 경험하고, 예상치 못한 만남을 기대하며 떠납니다." }, { text: "유명한 관광지보다는 숨겨진 명소를 찾아다니는 것을 즐깁니다." }] }
+                    ],
+                    'results': {
+                        'TetoMale': { emoji: '🦁', name: '테토남', description: "당신은 **테토남** 유형에 가깝군요! 현실적이고 실용적인 사고를 중시하며, 계획적이고 목표 지향적인 성향을 가지고 있습니다. 구체적인 결과물을 만들어내는 데 능숙하며, 안정성과 효율성을 추구하는 경향이 있습니다. 때로는 새로운 시도보다는 익숙하고 검증된 방법을 선호할 수 있습니다. 📊" },
+                        'EgenMale': { emoji: '🌸', name: '에겐남', description: "당신은 **에겐남** 유형에 가깝군요! 자유롭고 창의적인 사고를 즐기며, 새로운 아이디어를 탐색하고 변화를 두려워하지 않는 성향을 가지고 있습니다. 틀에 얽매이지 않고 다양한 가능성을 열어두는 것을 좋아하며, 예상치 못한 곳에서 영감을 얻기도 합니다. 때로는 현실적인 제약보다는 이상을 좇는 경향이 있을 수 있습니다. 🚀" },
+                        'TetoFemale': { emoji: '💪', name: '테토녀', description: "당신은 **테토녀** 유형에 가깝군요! 활기차고 능동적인 성향을 보이며, 독립적이고 단순한 사고 방식, 강한 멘탈 등의 특성이 관찰됩니다. 감성보다는 현실에 가까운 사고 방식을 지니고, 성취나 커리어 중심적인 사고를 하는 경우도 많습니다. 운동을 즐기거나 활동적인 취미를 가진 경우가 많고, 전반적으로 ‘건강한 느낌’의 라이프스타일을 가집니다. '외향적 양기'를 품은 존재입니다." },
+                        'EgenFemale': { emoji: '💖', name: '에겐녀', description: "당신은 **에겐녀** 유형에 가깝군요! 일반적으로 사람들이 떠올리는 ‘여성스러운 이미지’에 가까우며, 섬세하고 정적인 분위기를 가진 경우가 많습니다. 타인의 감정에 민감하게 반응하며, 공감 능력이 높습니다. 부드럽고 정적인 분위기를 가지며 온화하고 조용한 이미지입니다. 연애에서 수동적인 태도를 보이며, 감정적 유대와 공감 중심의 관계를 선호합니다. '내향적 음기'를 품은 존재입니다." }
+                    },
+                    'ideal_partners': {
+                        'TetoMale': 'EgenFemale',
+                        'EgenMale': 'TetoFemale',
+                        'TetoFemale': 'TetoMale',
+                        'EgenFemale': 'EgenMale'
+                    }
+                },
+                'en': {
+                    'main_title': 'Teto-Egen Personality Test ✨',
+                    'gender_selection_title': 'Please select your gender. 🚻',
+                    'male_button': 'Male ♂️',
+                    'female_button': 'Female ♀️',
+                    'result_section_title': 'Your Personality Type Is... 🎉',
+                    'restart_button': 'Retake Test 🔄',
+                    'alert_select_option': 'Please select an answer!',
+                    'option_emoji': '✔️',
+                    'ideal_partner_intro': '<br><br>❤️ Your ideal partner based on the love food chain: ',
+                    'teto_score_label': 'Teto Score: ',
+                    'egen_score_label': 'Egen Score: ',
+                    'questions': [
+                        { question: "When starting a new project, what do you usually think about first? 💡", options: [{ text: "I identify specific goals, deadlines, and required resources." }, { text: "I brainstorm all possible ideas and explore interesting directions." }, { text: "I analyze existing success cases and find areas for improvement based on them." }] },
+                        { question: "When a problem arises, how do you usually respond? ❓", options: [{ text: "I find the most efficient and feasible solution and execute it immediately." }, { text: "I deeply explore the root cause of the problem and consider creative alternatives." }, { text: "I listen to opinions from relevant experts and approach cautiously." }] },
+                        { question: "In daily life, what approach do you prefer? 🤔", options: [{ text: "I like to plan and stick to my plans, preferring predictability." }, { text: "I move spontaneously and flexibly with the situation, seeking new experiences." }, { text: "I set a broad framework and decide on details as I go." }] },
+                        { question: "When making decisions, what is more important to you? ⚖️", options: [{ text: "Rationality based on logical analysis and objective data." }, { text: "Intuition and inspiration, and freedom based on personal values." }, { text: "Listening sufficiently to the opinions of those around me before deciding." }] },
+                        { question: "How do you usually relieve stress? 😌", options: [{ text: "I try to regain control by perfecting tasks or organizing things." }, { text: "I look for new hobbies or try interesting activities to change my mood." }, { text: "I spend time alone and quietly reflect." }] },
+                        { question: "What is your first reaction when placed in a new environment? 🗺️", options: [{ text: "I observe my surroundings, gather information, and look for ways to adapt." }, { text: "I explore with curiosity, anticipating what interesting things might happen." }, { text: "I feel a slight anxiety about unfamiliar environments but try to get used to them quickly." }] },
+                        { question: "What do you value most when working with others? 🤝", options: [{ text: "Clear role division and efficient task processing." }, { text: "Free exchange of ideas and creative synergy." }, { text: "An atmosphere of mutual respect and harmonious cooperation." }] },
+                        { question: "When planning for the future, what kind of picture do you usually envision? 🔮", options: [{ text: "I set step-by-step goals and devise a feasible roadmap." }, { text: "I keep various possibilities open and prepare to respond flexibly to changes." }, { text: "I focus on the present, letting the future unfold naturally." }] },
+                        { question: "What is your typical social behavior? 👥", options: [{ text: "I have many friends and appointments, and I can't stand being still; I'm very active." }, { text: "I value my alone time and prefer static activities over movement." }, { text: "I can be active when needed, and sometimes I also enjoy my alone time." }] },
+                        { question: "What are your thoughts on fashion and appearance management? 👕", options: [{ text: "I don't have much interest, or I prefer simple and classic styles." }, { text: "I am sensitive to trends or have excellent aesthetic sense, and I'm good at decorating my social media." }, { text: "I prioritize comfort and practicality above all else." }] },
+                        { question: "When conflict arises in a relationship, what is your attitude? 💔", options: [{ text: "Rather than avoiding conflict, I confront it and resolve it through direct discussion." }, { text: "I am sensitive to emotional flow and value delicate and empathetic interactions." }, { text: "I try to avoid conflict, but if necessary, I try to resolve it through dialogue." }] },
+                        { question: "How do you usually express affection? ❤️", options: [{ text: "I express through actions rather than emotions, providing practical rewards." }, { text: "I convey emotions through words or atmosphere, and I'm good at showing affection and emotional communication." }, { text: "I adjust my expression style based on the other person's needs." }] },
+                        { question: "When encountering new knowledge or skills, what is your attitude? 🧠", options: [{ text: "I enjoy learning new technologies or tools." }, { text: "I find interest in appreciating or creating art." }, { text: "I like acquiring practical knowledge and applying it immediately." }] },
+                        { question: "What do you pursue in work or projects? 🏆", options: [{ text: "I find satisfaction in achieving the best results in a competitive environment." }, { text: "I value growing together in a collaborative atmosphere." }, { text: "I pursue both individual performance and team harmony." }] },
+                        { question: "When planning a trip, what is your priority? ✈️", options: [{ text: "I prioritize efficient routes and booking accommodation." }, { text: "I travel to experience new cultures and anticipate unexpected encounters." }, { text: "I enjoy exploring hidden gems rather than famous tourist spots." }] }
+                    ],
+                    'results': {
+                        'TetoMale': { emoji: '🦁', name: 'Teto-Man', description: "You are close to the **Teto-Man** type! Regardless of biological factors, you exhibit strong masculine qualities in social and behavioral traits. You have strong aggression and hunting instincts, are assertive, and possess leadership. You prioritize logic over emotion, are accustomed to group life, and are highly interested in the external world. You enjoy analyzing and judging, are reality-oriented, and prefer tangible results. You are simple, a go-getter once a decision is made, and enjoy challenges and adventures. You may not have much interest in fashion or prefer simple and classic styles, and you adapt well to unfamiliar places. You are active and excel in group activities and practical communication. In relationships, you express through actions rather than emotions; your empathy may be low, but you provide practical compensation when needed. You are less prone to emotional exchanges or showing aegyo, prefer to make the first move, and your ideal type is simple and clear. If you decide someone is 'your person,' you may pursue marriage quickly and tend to confront conflicts rather than avoid them. You are strong in taking the lead in relationships and exhibit a goal-oriented, action-centric approach to life. You possess the energy of 'extroverted yang (양기)'." },
+                        'EgenMale': { emoji: '🌸', name: 'Egen-Man', description: "You are close to the **Egen-Man** type! Regardless of biological factors, you exhibit strong feminine hormonal qualities in behavioral and social traits. You are generally sensitive to emotions, often display a gentle demeanor and passive attitude. You show sensitivity and delicacy, are prone to being easily affected, and react sensitively to both your own and others' emotions. You have a strong interest in abstract concepts (art, philosophy, literature) and are more inwardly focused. You prefer static hobbies over active ones and tend to prioritize work-life balance and rest. You may be ambiguous or neutral in self-expression, and you might be sensitive to trends or have excellent aesthetic sense. If you are interested in fashion or perfume, you have a high understanding and sense in those areas, and you are often adept at curating your social media. You value alone time and prefer static activities. In relationships, you tend to be passive, preferring to be pursued. You are accustomed to conveying emotions through words or atmosphere rather than actions and are good at delicate and empathetic interactions and emotional communication. You may take a long time to get over past relationships, and emotional lingering tends to be long. In love, you move according to the flow of emotions and emotional lines rather than immediate reactions. You embody the energy of 'introverted yin (음기)'." },
+                        'TetoFemale': { emoji: '💪', name: 'Teto-Woman', description: "You are close to the **Teto-Woman** type! Regardless of biological factors, you exhibit testosterone-like (masculine hormone) qualities in behavioral and social traits. You are generally lively and active, showing independent and simple thinking, and strong mental resilience. You are active, assertive, and adventurous, with a strong sense of independence. You may have a somewhat simple thought structure and tend to quickly judge situations rather than emotions. You are often active, possess cheerful and healthy energy, and are not easily discouraged. You have a more realistic than emotional way of thinking and often focus on achievement or career. You enjoy exercise or active hobbies and generally lead a 'healthy' lifestyle. Street fashion and trendy styles suit you well, and if extroverted, you may have many male friends or are comfortable forming natural relationships with the opposite sex. In relationships, you have no difficulty making the first move and are direct in expressing emotions. When less interested in romance, you often focus on career or self-development. You may often attract men who are particularly feminine (Egen-Man), but you are generally attracted to masculine men, finding charm in their dedication to work, focus on achievement, well-developed muscles, and overall masculine energy. You embody the energy of 'extroverted yang (양기)'." },
+                        'EgenFemale': { emoji: '💖', name: 'Egen-Woman', description: "You are close to the **Egen-Woman** type! Regardless of biological factors, you exhibit feminine hormonal qualities in social and behavioral traits. You generally align with the common image of 'feminine' (emotion, conversation, care, stability, empathy), often having a delicate and static demeanor. You tend to be somewhat passive and easily influenced by emotional flows. You are not overly assertive or strong-willed, often timid, and frequently ponder about yourself. You have a complex inner structure and are highly sensitive to others' emotions, possessing high empathy. You may particularly prefer Egen-Men or be attracted to emotional and boyish-looking men. In Relationships, you tend to be passive, often starting relationships when approached by others. You value emotional connection, stability, and warmth in relationships, with the emotional temperature and emotional bond being crucial. Compared to Teto-Women, you tend to get hurt more easily in relationships, and emotional lingering can last long. You feel and express emotions delicately but are also easily affected. You embody the energy of 'introverted yin (음기)'." }
+                    },
+                    'ideal_partners': {
+                        'TetoMale': 'EgenFemale',
+                        'EgenMale': 'TetoFemale',
+                        'TetoFemale': 'TetoMale',
+                        'EgenFemale': 'EgenMale'
+                    }
+                },
+                'zh': {
+                    'main_title': '泰托-埃根性格测试 ✨',
+                    'gender_selection_title': '请选择您的性别。🚻',
+                    'male_button': '男性 ♂️',
+                    'female_button': '女性 ♀️',
+                    'result_section_title': '您的性格类型是... 🎉',
+                    'restart_button': '重新测试 🔄',
+                    'alert_select_option': '请选择一个答案！',
+                    'option_emoji': '✔️',
+                    'ideal_partner_intro': '<br><br>❤️ 根据恋爱食物链，您的理想伴侣是：',
+                    'teto_score_label': '泰托倾向分数：',
+                    'egen_score_label': '埃根倾向分数：',
+                    'questions': [
+                        { question: "开始新项目时，您通常首先考虑什么？💡", options: [{ text: "我明确目标、截止日期，并确定所需资源。" }, { text: "我自由地进行头脑风暴，探索所有可能的有趣方向。" }, { text: "我分析现有成功案例，并在此基础上寻找改进点。" }] },
+                        { question: "当问题出现时，您通常如何应对？❓", options: [{ text: "我寻找最有效、最可行的解决方案并立即执行。" }, { text: "我深入探究问题的根本原因，并思考创新的替代方案。" }, { text: "我听取相关专家的意见，并谨慎行事。" }] },
+                        { question: "在日常生活中，您偏好哪种方式？🤔", options: [{ text: "我喜欢制定计划并按照计划行事，偏好可预测性。" }, { text: "我随性而灵活地应对情况，追求新的体验。" }, { text: "我只确定大框架，细节则随遇而安。" }] },
+                        { question: "做决定时，对您来说什么更重要？⚖️", options: [{ text: "基于逻辑分析和客观数据的理性。" }, { text: "直觉和灵感，以及基于个人价值观的自由。" }, { text: "充分听取周围人的意见后再做决定。" }] },
+                        { question: "您通常如何缓解压力？😌", options: [{ text: "我通过更完美地处理任务或整理东西来重新获得控制感。" }, { text: "我寻找新的爱好或尝试有趣的活动来改变心情。" }, { text: "我独自一人，静静地思考。" }] },
+                        { question: "当置身于新环境时，您的第一反应是什么？🗺️", options: [{ text: "我观察周围环境，收集信息，并寻找适应的方法。" }, { text: "我好奇地探索，期待会发生什么有趣的事情。" }, { text: "我对陌生环境略感不安，但会努力尽快适应。" }] },
+                        { question: "与人合作时，您最看重什么？🤝", options: [{ text: "明确的分工和高效的任务处理。" }, { text: "自由的意见交流和创造性的协同效应。" }, { text: "相互尊重、和谐协作的氛围。" }] },
+                        { question: "规划未来时，您通常描绘怎样的蓝图？🔮", options: [{ text: "我设定分阶段目标，并制定可行的路线图。" }, { text: "我保持多种可能性开放，并准备灵活应对变化。" }, { text: "我专注于当下，让未来顺其自然。" }] },
+                        { question: "您的社交行为通常是怎样的？👥", options: [{ text: "朋友多，约会多，闲不住，活动量大。" }, { text: "重视独处时间，偏好静态活动而非动态活动。" }, { text: "需要时活跃，有时也享受独处。" }] },
+                        { question: "您对时尚和外表管理有什么看法？👕", options: [{ text: "兴趣不大，或偏好简洁经典的风格。" }, { text: "对潮流敏感或审美能力出众，擅长打理社交媒体。" }, { text: "最重视舒适和实用性。" }] },
+                        { question: "恋爱关系中出现冲突时，您的态度是？💔", options: [{ text: "不逃避冲突，而是直面并解决问题。" }, { text: "对情感流动敏感，重视细腻和共情的交流。" }, { text: "尽量避免冲突，但必要时会努力通过对话解决。" }] },
+                        { question: "您通常如何表达爱意？❤️", options: [{ text: "通过行动而非言语表达，提供实际的奖励。" }, { text: "通过言语或氛围传达情感，擅长撒娇和情感沟通。" }, { text: "根据对方的需求调整表达方式。" }] },
+                        { question: "接触新知识或技能时，您持何种态度？🧠", options: [{ text: "喜欢学习新技术或工具。" }, { text: "对欣赏或创作艺术作品感兴趣。" }, { text: "喜欢获取实用知识并立即应用。" }] },
+                        { question: "在工作或项目中，您追求什么？🏆", options: [{ text: "在竞争环境中取得最佳表现感到满足。" }, { text: "重视在协作氛围中共同成长。" }, { text: "追求个人表现和团队和谐的平衡。" }] },
+                        { question: "计划旅行时，您的优先事项是什么？✈️", options: [{ text: "优先考虑高效的路线和住宿预订。" }, { text: "旅行是为了体验新文化，期待意外的相遇。" }, { text: "喜欢探索隐藏的景点而非著名的旅游胜地。" }] }
+                    ],
+                    'results': {
+                        'TetoMale': { emoji: '🦁', name: '泰托男', description: "您接近**泰托男**类型！无关生物学数值，在社会和行为特征上展现出强烈男性特质的男性。攻击性和狩猎本能强，主张强烈，有领导力。优先逻辑而非情感，习惯群体生活，对外部世界兴趣浓厚。喜欢分析判断，现实导向，偏好实际成果。为人简单，一旦决定就会坚持到底，喜欢挑战和冒险。对时尚兴趣不大或偏好简洁经典风格，适应陌生环境能力强。活动量大，擅长集体活动和实用沟通。恋爱中更倾向于行动而非情感表达，共情能力较低，但在需要时会提供实际补偿。撒娇和情感交流较少，喜欢主动追求，理想型简单明了。一旦认定是“自己人”，可能会迅速推进婚姻，倾向于直面冲突而非逃避。在关系中主导性强，生活态度目标导向且行动力强。拥有“外向阳气”的能量。" },
+                        'EgenMale': { emoji: '🌸', name: '埃根男', description: "您接近**埃根男**类型！无关生物学数值，在行为和社会特征上展现出强烈女性荷尔蒙特质的男性。整体上对情感敏感，常表现出温柔的氛围和被动的态度。感性和细腻，易受影响，对自己和他人情感反应敏感。对抽象概念（艺术、哲学、文学等）兴趣浓厚，更倾向于内心世界。偏好静态爱好而非动态活动，倾向于重视工作与生活的平衡和休息。自我表达时可能含糊或中立，可能对潮流敏感或审美能力出众。若对时尚或香水感兴趣，则在该领域有较高理解和品味，擅长打理社交媒体。重视独处时间，偏好静态活动。恋爱中倾向被动，更喜欢被追求。习惯通过言语或氛围而非行动表达情感，重视细腻和共情的交流，擅长撒娇和情感沟通。可能长时间无法忘记前任，情感余韵较长。恋爱中更随心而动，而非立即反应。拥有“内向阴气”的能量。" },
+                        'TetoFemale': { emoji: '💪', name: '泰托女', description: "您接近**泰托女**类型！无关生物学数值，在行为和社会特征上展现出睾酮（男性荷尔蒙）特质的女性。整体上活泼积极，独立思考，思维简单，心理素质强。活泼主动，有挑战精神，独立性强。思维结构可能较简单，倾向于快速判断而非情感。通常活跃，充满活力和健康能量，不易气馁。思维方式更接近现实而非感性，也可能以成就或事业为中心。喜欢运动或有活跃的爱好，整体生活方式“健康”。擅长驾驭街头时尚和潮流风格，如果外向，可能有很多男性朋友，习惯与异性自然交往。恋爱中不难主动追求心仪对象，情感表达直接。当对异性兴趣不大时，也可能专注于事业或自我提升。虽然可能吸引到特别女性化（埃根男）的男性，但自己通常更喜欢有男性气质的男性，被其工作投入、成就专注、发达肌肉和前臂等男性特质所吸引。在事业和爱情中都展现出主导性，拥有“外向阳气”的能量。" },
+                        'EgenFemale': { emoji: '💖', name: '埃根女', description: "您接近**埃根女**类型！无关生物学数值，在社会和行为特征上展现出女性荷尔蒙特质的女性。通常符合人们心中“女性化形象”（感性、交流、关怀、稳定、共情等），常具有细腻和静态的氛围。可能有些被动，易受情感流动影响。主张或气势不强，可能有些胆怯，常反思自己。内心结构复杂，对他人情感敏感，共情能力高。可能特别偏好埃根男，或被感性、少年感的男性吸引。恋爱中倾向被动，常因对方追求而开始关系。重视情感联结、稳定和关系的温暖，情感温度和情感交流至关重要。与泰托女相比，在恋爱中更容易受伤，情感余韵可能持续很久。细腻地感受和表达情感，但也容易受到打击。拥有“内向阴气”的能量。" }
+                    },
+                    'ideal_partners': {
+                        'TetoMale': 'EgenFemale',
+                        'EgenMale': 'TetoFemale',
+                        'TetoFemale': 'TetoMale',
+                        'EgenFemale': 'EgenMale'
+                    }
+                },
+                'ja': {
+                    'main_title': 'テト-エゲン性格診断 ✨',
+                    'gender_selection_title': '性別を選択してください。🚻',
+                    'male_button': '男性 ♂️',
+                    'female_button': '女性 ♀️',
+                    'result_section_title': 'あなたの性格タイプは... 🎉',
+                    'restart_button': 'もう一度診断する 🔄',
+                    'alert_select_option': '回答を選択してください！',
+                    'option_emoji': '✔️',
+                    'ideal_partner_intro': '<br><br>❤️ 恋愛食物連鎖によるあなたの理想の相手は：',
+                    'teto_score_label': 'テト傾向スコア：',
+                    'egen_score_label': 'エゲン傾向スコア：',
+                    'questions': [
+                        { question: "新しいプロジェクトを始める際、まず何を考えますか？💡", options: [{ text: "具体的な目標と期限、必要なリソースを把握します。" }, { text: "あらゆるアイデアをブレインストーミングし、興味深い方向性を探ります。" }, { text: "既存の成功事例を分析し、それを基に改善点を見つけます。" }] },
+                        { question: "問題が発生したとき、あなたはどのように対応しますか？❓", options: [{ text: "最も効率的で実現可能な解決策を見つけて即座に実行します。" }, { text: "問題の根本原因を深く探求し、創造的な代替案を検討します。" }, { text: "関連専門家の意見を聞き、慎重に対応します。" }] },
+                        { question: "日常生活で、あなたはどのようなスタイルを好みますか？🤔", options: [{ text: "計画を立ててそれに従い、予測可能なことを好みます。" }, { text: "即興的で柔軟に状況に対応し、新しい経験を追求します。" }, { text: "大まかな枠組みだけを決め、詳細はその都度決定します。" }] },
+                        { question: "意思決定をする際、あなたにとってより重要なのは何ですか？⚖️", options: [{ text: "論理的な分析と客観的なデータに基づいた合理性。" }, { text: "直感とひらめき、そして個人的な価値観に基づいた自由さ。" }, { text: "周囲の意見を十分に聞いてから決定します。" }] },
+                        { question: "ストレスを感じたとき、あなたは主にどのように解消しますか？😌", options: [{ text: "やるべきことをより完璧にこなしたり、整理したりして、コントロールを取り戻そうとします。" }, { text: "新しい趣味を見つけたり、興味深い活動を通して気分転換を試みます。" }, { text: "一人の時間を取り、静かに考えにふけります。" }] },
+                        { question: "新しい環境に置かれたとき、あなたの最初の反応は？🗺️", options: [{ text: "周囲を観察し情報を収集し、適応する方法を模索します。" }, { text: "好奇心を持って探索し、どんな面白いことが起こるか期待します。" }, { text: "慣れない環境に多少の不安を感じますが、すぐに慣れようと努力します。" }] },
+                        { question: "人々と協力して働くとき、あなたが最も重要視することは何ですか？🤝", options: [{ text: "明確な役割分担と効率的な業務処理。" }, { text: "自由な意見交換と創造的な相乗効果。" }, { text: "互いに尊重し合い、調和の取れた協力関係。" }] },
+                        { question: "未来を計画する際、あなたは主にどのような絵を描きますか？🔮", options: [{ text: "段階的な目標を設定し、達成可能なロードマップを構想します。" }, { text: "様々な可能性を残し、変化に柔軟に対応する準備をします。" }, { text: "現在に忠実で、未来は自然に流れるに任せます。" }] },
+                        { question: "あなたの社会生活は主にどのようなものですか？👥", options: [{ text: "友達や約束が多く、じっとしているのが苦手で活動量が多いです。" }, { text: "一人の時間を大切にし、動きよりも静的な活動を好みます。" }, { text: "必要に応じて活動的になり、時には一人の時間も楽しみます。" }] },
+                        { question: "ファッションや外見管理について、あなたの考えは？👕", options: [{ text: "あまり興味がないか、シンプルでクラシックなスタイルを好みます。" }, { text: "トレンドに敏感で美的センスに優れており、SNSを飾るのが得意です。" }, { text: "快適さと実用性を最も重視します。" }] },
+                        { question: "恋愛関係で衝突が起きたとき、あなたの態度は？💔", options: [{ text: "衝突を避けず、直接向き合って解決する方です。" }, { text: "感情の流れに敏感で、繊細で共感的な交流を重視します。" }, { text: "衝突を避けようとしますが、必要であれば対話を通じて解決しようと努力します。" }] },
+                        { question: "愛情表現は主にどのような形ですか？❤️", options: [{ text: "感情よりも行動で表現し、実質的な報酬を与える方です。" }, { text: "言葉や雰囲気で感情を伝え、愛嬌や感情的なコミュニケーションが得意です。" }, { text: "相手のニーズに合わせて表現方法を調整します。" }] },
+                        { question: "新しい知識やスキルに触れるとき、あなたはどのような態度を示しますか？🧠", options: [{ text: "新しい技術やツールを学ぶことを楽しみます。" }, { text: "芸術作品を鑑賞したり創作したりすることに興味を感じます。" }, { text: "実用的な知識を習得し、すぐに適用することを好みます。" }] },
+                        { question: "仕事やプロジェクトで、あなたが追求するものは何ですか？🏆", options: [{ text: "競争的な環境で最高の成果を出すことに満足感を感じます。" }, { text: "協力的な雰囲気の中で共に成長することを重要視します。" }, { text: "個人の成果とチームの調和の両方を追求します。" }] },
+                        { question: "旅行計画を立てる際、あなたの優先順位は？✈️", options: [{ text: "効率的な動線と宿泊施設の予約を最優先します。" }, { text: "新しい文化を体験し、予期せぬ出会いを期待して旅立ちます。" }, { text: "有名な観光地よりも隠れた名所を探し回ることを楽しみます。" }] }
+                    ],
+                    'results': {
+                        'TetoMale': { emoji: '🦁', name: 'テト男', description: "あなたは**テト男**タイプに近いですね！生物学的数値とは無関係に、社会的・行動的特性において男性的な資質が強く現れる男性です。攻撃性と狩猟本能が強く、自己主張が強くリーダーシップがあります。感情よりも論理を優先し、群れでの生活に慣れており、外部世界に強い関心を持っています。分析と判断を好み、現実志向で実質的な成果を好みます。単純で、一度決めたことは押し通すタイプで、挑戦と冒険を好みます。ファッションや香水にはあまり興味がないか、シンプルでクラシックなスタイルを好み、慣れない場所でもよく眠り、適応能力が高いです。活動量が多く、団体活動や実用的なコミュニケーションに強みがあります。恋愛では感情よりも行動で表現するタイプで、共感能力は低いですが、必要な瞬間には（プレゼント、お金などの）実質的な報酬を与えます。愛嬌や感情的な交流は少ない方で、アプローチされるよりも自分からする方が楽です。理想のタイプは抽象的ではなく、外見（可愛い、セクシー、綺麗）と優しさ程度で単純明快です。自分の人だと判断すれば積極的にアプローチし、結婚まで早く進むケースもあります。回避よりも葛藤に直面する方で、問題があれば戦って終わらせる方式です。関係において主導権を握り、リードする傾向が強く、目標志向的で行動中心的な生き方をします。「外向的陽気」のエネルギーを持つ存在です。" },
+                        'EgenMale': { emoji: '🌸', name: 'エゲン男', description: "あなたは**エゲン男**タイプに近いですね！生物学的数値とは無関係に、行動的・社会的特性において女性ホルモンの資質が強く現れる男性を指します。全体的に感情に敏感で、柔らかな雰囲気と受動的な態度を示すことが多いです。感受性と繊細さがあり、デリケートな方で、自分だけでなく他人の感情にも敏感に反応します。抽象的な概念（芸術、哲学、文学など）に興味が深く、内面志向的で、政治や社会問題よりも個人的な世界に関心を持つことが多いです。活動性よりも静的な趣味を好み、ワークライフバランスと休息を重視する傾向があります。自己表現において曖昧または中立的な態度を示すこともあります。トレンドに敏感であったり、美的感覚に優れている場合があります。ファッションや香水に興味がある場合、その分野に対する理解度とセンスが高い方です。SNSを飾ることに慣れていることが多く、フィードやプレイリストなどにセンスを表現する傾向があります。一人の時間を重要視します。動きよりも静的な活動を好みます（例：読書、映画、展示鑑賞など）。恋愛では受動的な傾向があり、アプローチされる方が楽です。感情表現は行動よりも言葉や雰囲気で伝えることに慣れています。繊細で共感的な交流を重視し、愛嬌や感情的なコミュニケーションが得意なことが多いです。元恋人を長く忘れられないケースもあり、感情の余韻が長く残る傾向があります。恋愛においては、即座の反応よりも心の流れや感情線に沿って動く方です。「内向的陰気」を宿した存在です。" },
+                        'TetoFemale': { emoji: '💪', name: 'テト女', description: "あなたは**テト女**タイプに近いですね！生物学的数値とは無関係に、行動的・社会的特性においてテストステロン（男性ホルモン）の資質が現れる女性です。全体的に活発で能動的な性向を示し、独立した単純な思考方式、強いメンタルなどの特性が観察されます。活発で積極的、挑戦的な態度を持ち、独立心が強いです。やや単純な思考構造を持つことがあり、感情よりも状況を素早く判断する傾向があります。活動的なことが多く、愉快で健康的なエネルギーを持ち、萎縮したり気が引けたりすることはあまりありません。感性よりも現実に近い思考方式を持ち、達成やキャリア中心的な思考をすることもあります。恋愛よりも仕事に没頭する時期もあります。運動を楽しんだり活動的な趣味を持つことが多く、全体的に「健康的な雰囲気」のライフスタイルを持つことが多いです。フリル、レース、バレエコアスタイルはどこか似合わないと感じるケースが多々あります。ストリートファッションやヒップなスタイルが中心となる最近の流行の中で、テト女はエゲン女に比べて最新のトレンドをよりよく着こなすため、相対的にトレンディな印象を与えることが多いです。時間が経つにつれて言動が落ち着き、女性らしい方向に変わることもあり、これは社会化の過程で周囲の雰囲気に合わせていく自然な変化と解釈できます。外向的な場合、男友達が多く、異性との自然な関係形成に慣れています。恋愛では好意のある異性に先にアプローチすることは難しくありません。感情表現においては直接的で、隠すよりも表に出す傾向があります。異性への関心が低いときは、キャリアや自己啓発に集中することも多いです。特に女性らしい（エゲン男）男性に好意を持たれたりアプローチされたりするケースが多いですが、本人は概して男性的な男性に惹かれる傾向があり、仕事に没頭する姿や達成への集中力、よく発達した筋肉、前腕など、男性性から現れるエネルギー自体に魅力を感じることが多いです。能動的で独立的な性向の女性タイプです。恋愛でも受動的ではなく、感情よりも行動と現実を重視します。エゲン女が「内向的陰気」であるならば、テト女は「外向的陽気」を宿した存在で、強いエネルギーと明確な存在感を基盤に仕事と愛を主導する姿を見せます。" },
+                        'EgenFemale': { emoji: '💖', name: 'エゲン女', description: "あなたは**エゲン女**タイプに近いですね！生物学的数値とは無関係に、社会的・行動的特性において女性ホルモンの資質が現れる女性を意味します。一般的に人々が思い描く「女性らしいイメージ」（感性、会話、世話、安定、共感など）に近く、繊細で静的な雰囲気を持つことが多いです。やや受動的な面持ちとともに、感情の流れに影響を受けやすい傾向を持ちます。主張や気が強い方ではなく、やや臆病で、自分自身についてよく悩む方です。複雑な内面構造を持ち、他人の感情に敏感に反応し、共感能力が高いです。エゲン男を特に好むか、感性的で美少年のようなイメージの男性に惹かれる傾向があります。恋愛では自分からアプローチするよりも相手からのアプローチで関係が始まることが多いです。感性的な絆、安定感、関係の温かさなどを重要視します。異性への関心が大きくないときは、家族、友人、平凡な日常生活の中のささやかな幸せを中心に据えます。柔らかく静的な雰囲気を持つことが多く、穏やかで静かなイメージで、学生時代も目立って行動するよりも静かな位置にいたことが多いです。ストリートベースのトレンディなスタイリングはやや異質に感じられることがあります。流行の服よりも女性らしくクラシックなスタイルが自然に似合うことが多いです。センスがある場合、芸術・文学・デザインなど創造的な分野に深く没頭することがあります。恋愛では受動的な態度を示すことが多く、自分からアプローチするよりも導かれる恋愛を経験する方です。感性的な絆と共感中心の関係を好み、関係の温度と情緒的な交流が重要です。テト女に比べて恋人との関係で傷つくことが多く、感情の余韻が長く続く傾向があります。感情を繊細に感じ表現しますが、同時に打撃も受けやすいことがあります。柔らかく感性的な情緒中心の女性タイプです。感情の流れと共感、安定感を重要視し、恋愛でも主導よりも反応のリズムに近い態度を示します。時間が経つにつれて感情の経験を基盤に、強靭で独立的な存在へと成長することも多いです。" }
+                    },
+                    'ideal_partners': {
+                        'TetoMale': 'EgenFemale',
+                        'EgenMale': 'TetoFemale',
+                        'TetoFemale': 'TetoMale',
+                        'EgenFemale': 'EgenMale'
+                    }
+                },
+                'es': {
+                    'main_title': 'Test de Personalidad Teto-Egen ✨',
+                    'gender_selection_title': 'Por favor, seleccione su género. 🚻',
+                    'male_button': 'Masculino ♂️',
+                    'female_button': 'Femenino ♀️',
+                    'result_section_title': 'Tu Tipo de Personalidad Es... 🎉',
+                    'restart_button': 'Repetir Test 🔄',
+                    'alert_select_option': '¡Por favor, seleccione una respuesta!',
+                    'option_emoji': '✔️',
+                    'ideal_partner_intro': '<br><br>❤️ Tu pareja ideal según la cadena alimenticia del amor: ',
+                    'teto_score_label': 'Puntuación Teto: ',
+                    'egen_score_label': 'Puntuación Egen: ',
+                    'questions': [
+                        { question: "¿Al iniciar un nuevo proyecto, en qué piensas primero? 💡", options: [{ text: "Identifico objetivos específicos, plazos y recursos necesarios." }, { text: "Hago una lluvia de ideas de todas las posibilidades y exploro direcciones interesantes." }, { text: "Analizo casos de éxito existentes y busco puntos de mejora en base a ellos." }] },
+                        { question: "¿Cuando surge un problema, cómo sueles responder? ❓", options: [{ text: "Encuentro la solución más eficiente y factible y la ejecuto de inmediato." }, { text: "Exploro profundamente la causa raíz del problema y considero alternativas creativas." }, { text: "Escucho las opiniones de expertos relevantes y actúo con cautela." }] },
+                        { question: "¿En la vida diaria, qué enfoque prefieres? 🤔", options: [{ text: "Me gusta planificar y apegarme a mis planes, prefiriendo la previsibilidad." }, { text: "Me muevo espontáneamente y con flexibilidad según la situación, buscando nuevas experiencias." }, { text: "Establezco un marco general y decido los detalles sobre la marcha." }] },
+                        { question: "¿Al tomar decisiones, qué es más importante para ti? ⚖️", options: [{ text: "La racionalidad basada en el análisis lógico y datos objetivos." }, { text: "La intuición y la inspiración, y la libertad basada en valores personales." }, { text: "Escuchar suficientemente las opiniones de quienes me rodean antes de decidir." }] },
+                        { question: "¿Cómo sueles aliviar el estrés? 😌", options: [{ text: "Intento recuperar el control perfeccionando tareas u organizando cosas." }, { text: "Busco nuevos pasatiempos o pruebo actividades interesantes para cambiar mi estado de ánimo." }, { text: "Paso tiempo a solas y reflexiono tranquilamente." }] },
+                        { question: "¿Cuál es tu primera reacción al encontrarte en un nuevo entorno? 🗺️", options: [{ text: "Observo mi entorno, recopilo información y busco formas de adaptarme." }, { text: "Exploro con curiosidad, anticipando qué cosas interesantes podrían suceder." }, { text: "Siento una ligera ansiedad por los entornos desconocidos, pero intento acostumbrarme rápidamente." }] },
+                        { question: "¿Qué valoras más al trabajar con otros? 🤝", options: [{ text: "La clara división de roles y el procesamiento eficiente de tareas." }, { text: "El libre intercambio de ideas y la sinergia creativa." }, { text: "Un ambiente de respeto mutuo y cooperación armoniosa." }] },
+                        { question: "¿Al planificar el futuro, qué tipo de imagen sueles visualizar? 🔮", options: [{ text: "Establezco metas paso a paso y diseño una hoja de ruta factible." }, { text: "Mantengo varias posibilidades abiertas y me preparo para responder con flexibilidad a los cambios." }, { text: "Me centro en el presente, dejando que el futuro se desarrolle de forma natural." }] },
+                        { question: "¿Cómo es tu comportamiento social típico? 👥", options: [{ text: "Tengo muchos amigos y citas, no puedo quedarme quieto y soy muy activo." }, { text: "Valoro mi tiempo a solas y prefiero actividades estáticas a las dinámicas." }, { text: "Puedo ser activo cuando es necesario, y a veces también disfruto de mi tiempo a solas." }] },
+                        { question: "¿Qué piensas sobre la moda y el cuidado personal? 👕", options: [{ text: "No me interesa mucho, o prefiero estilos simples y clásicos." }, { text: "Soy sensible a las tendencias o tengo un excelente sentido estético, y se me da bien decorar mis redes sociales." }, { text: "Priorizo la comodidad y la practicidad por encima de todo." }] },
+                        { question: "¿Cuando surge un conflicto en una relación, cuál es tu actitud? 💔", options: [{ text: "En lugar de evitar el conflicto, lo enfrento y lo resuelvo directamente." }, { text: "Soy sensible al flujo emocional y valoro las interacciones delicadas y empáticas." }, { text: "Intento evitar el conflicto, pero si es necesario, intento resolverlo a través del diálogo." }] },
+                        { question: "¿Cómo sueles expresar afecto? ❤️", options: [{ text: "Me expreso con acciones más que con emociones, brindando recompensas prácticas." }, { text: "Transmito emociones con palabras o el ambiente, y soy bueno/a mostrando afecto y comunicación emocional." }, { text: "Ajusto mi estilo de expresión según las necesidades de la otra persona." }] },
+                        { question: "Al encontrarte con nuevos conocimientos o habilidades, ¿cuál es tu actitud? 🧠", options: [{ text: "Disfruto aprendiendo nuevas tecnologías o herramientas." }, { text: "Me interesa apreciar o crear obras de arte." }, { text: "Me gusta adquirir conocimientos prácticos y aplicarlos de inmediato." }] },
+                        { question: "¿Qué buscas en el trabajo o en los proyectos? 🏆", options: [{ text: "Encuentro satisfacción al lograr los mejores resultados en un entorno competitivo." }, { text: "Valoro crecer juntos en un ambiente colaborativo." }, { text: "Busco tanto el rendimiento individual como la armonía del equipo." }] },
+                        { question: "Al planificar un viaje, ¿cuál es tu prioridad? ✈️", options: [{ text: "Priorizo rutas eficientes y la reserva de alojamiento." }, { text: "Viajo para experimentar nuevas culturas y anticipar encuentros inesperados." }, { text: "Disfruto explorando gemas ocultas en lugar de lugares turísticos famosos." }] }
+                    ],
+                    'results': {
+                        'TetoMale': { emoji: '🦁', name: 'Masculino Teto', description: "¡Estás cerca del tipo **Teto-Hombre**! Independientemente de los valores biológicos, exhibes fuertes cualidades masculinas en tus rasgos sociales y de comportamiento. Tienes un fuerte instinto de agresión y caza, eres asertivo y posees liderazgo. Priorizas la lógica sobre la emoción, estás acostumbrado a la vida en grupo y te interesas mucho por el mundo exterior. Disfrutas analizando y juzgando, eres orientado a la realidad y prefieres resultados tangibles. Eres simple, decidido una vez que tomas una decisión, y disfrutas los desafíos y la aventura. Puede que no te interese mucho la moda o que prefieras estilos simples y clásicos, y te adaptas bien a lugares desconocidos. Eres activo y destacas en actividades grupales y comunicación práctica. En las relaciones, te expresas con acciones más que con emociones; tu empatía puede ser baja, pero proporcionas compensación práctica cuando es necesario. Eres menos propenso a los intercambios emocionales o a mostrar afecto efusivo, prefieres tomar la iniciativa, y tu tipo ideal es simple y claro. Si consideras a alguien 'tu persona', puedes buscar el matrimonio rápidamente y tiendes a enfrentar los conflictos en lugar de evitarlos. Eres fuerte en tomar la iniciativa en las relaciones y exhibes un enfoque de vida orientado a objetivos y a la acción. Posees la energía del 'yang extrovertido'." },
+                        'EgenMale': { emoji: '🌸', name: 'Masculino Egen', description: "¡Estás cerca del tipo **Egen-Hombre**! Independientemente de los valores biológicos, exhibes fuertes cualidades hormonales femeninas en tus rasgos conductuales y sociales. Generalmente eres sensible a las emociones, a menudo mostrando un comportamiento suave y una actitud pasiva. Muestras sensibilidad y delicadeza, eres propenso a ser fácilmente afectado y reaccionas sensiblemente a tus propias emociones y a las de los demás. Tienes un fuerte interés en conceptos abstractos (arte, filosofía, literatura) y estás más enfocado hacia tu interior. Prefieres pasatiempos estáticos a los activos y tiendes a priorizar el equilibrio entre el trabajo y la vida personal y el descanso. Puedes ser ambiguo o neutral en la autoexpresión, y podrías ser sensible a las tendencias o tener un excelente sentido estético. Si te interesa la moda o los perfumes, tienes un alto nivel de comprensión y gusto en esas áreas, y a menudo eres hábil para curar tus redes sociales. Valoras tu tiempo a solas y prefieres actividades estáticas. En las relaciones, tiendes a ser pasivo, prefiriendo ser cortejado. Estás acostumbrado a transmitir emociones con palabras o el ambiente en lugar de acciones y eres bueno en interacciones delicadas y empáticas y en la comunicación emocional. Puedes tardar mucho en superar relaciones pasadas, y el recuerdo emocional tiende a ser largo. En el amor, te mueves según el flujo de las emociones y las líneas emocionales en lugar de reacciones inmediatas. Encarnas la energía del 'yin introvertido'." },
+                        'TetoFemale': { emoji: '💪', name: 'Femenino Teto', description: "¡Estás cerca del tipo **Teto-Mujer**! Independientemente de los valores biológicos, exhibes cualidades de testosterona (hormona masculina) en tus rasgos conductuales y sociales. Generalmente eres animada y activa, mostrando un pensamiento independiente y simple, y una fuerte resiliencia mental. Eres activa, asertiva y aventurera, con un fuerte sentido de independencia. Puedes tener una estructura de pensamiento algo simple y tiendes a juzgar rápidamente las situaciones en lugar de las emociones. A menudo eres activa, posees una energía alegre y saludable, y no te desanimas fácilmente. Tienes una forma de pensar más realista que emocional y a menudo te centras en el logro o la carrera. Disfrutas el ejercicio o los pasatiempos activos y generalmente llevas un estilo de vida 'saludable'. La moda urbana y los estilos de moda te sientan bien, y si eres extrovertida, puedes tener muchos amigos hombres o te sientes cómoda formando relaciones naturales con el sexo opuesto. En las relaciones, no tienes dificultad para tomar la iniciativa y eres directa al expresar emociones. Cuando tienes menos interés en el romance, a menudo te concentras en tu carrera o desarrollo personal. A menudo atraes a hombres particularmente femeninos (Egen-Hombres), pero eres generalmente atraída por hombres masculinos, encontrando encanto en su dedicación al trabajo, el enfoque en el logro, los músculos bien desarrollados y la energía masculina en general. Encarnas la energía del 'yang extrovertido'." },
+                        'EgenFemale': { emoji: '💖', name: 'Femenino Egen', description: "¡Estás cerca del tipo **Egen-Mujer**! Independientemente de los valores biológicos, exhibes cualidades hormonales femeninas en tus rasgos sociales y de comportamiento. Generalmente te alineas con la imagen común de 'femenina' (emoción, conversación, cuidado, estabilidad, empatía), a menudo teniendo un comportamiento delicado y estático. Tiendes a ser algo pasiva y fácilmente influenciada por los flujos emocionales. No eres excesivamente asertiva o fuerte de carácter, a menudo eres tímida y reflexionas mucho sobre ti misma. Tienes una estructura interna compleja y eres muy sensible a las emociones de los demás, poseyendo una alta empatía. Puedes preferir particularmente a los Egen-Hombres o sentirte atraída por hombres emocionales y de aspecto juvenil. En las relaciones, tiendes a ser pasiva, a menudo iniciando relaciones cuando otros te abordan. Valoras la conexión emocional, la estabilidad y la calidez en las relaciones, siendo crucial la temperatura emocional y el vínculo emocional. En comparación con las Teto-Mujeres, tiendes a salir más herida en las relaciones, y el recuerdo emocional puede durar mucho tiempo. Sientes y expresas emociones delicadamente, pero también eres fácilmente afectada. Encarnas la energía del 'yin introvertido'." }
+                    },
+                    'ideal_partners': {
+                        'TetoMale': 'EgenFemale',
+                        'EgenMale': 'TetoFemale',
+                        'TetoFemale': 'TetoMale',
+                        'EgenFemale': 'EgenMale'
+                    }
+                }
+            };
+
+            // Function to draw the circular progress bar on the canvas
+            function drawProgressBar(current, total) {
+                ctx.clearRect(0, 0, canvasSize, canvasSize); // Clear the canvas
+
+                // Draw background circle (gray)
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 8;
+                ctx.stroke();
+
+                // Draw progress arc (blue)
+                const endAngle = (Math.PI * 2 * current) / total - (Math.PI / 2); // Start from 12 o'clock
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, -Math.PI / 2, endAngle);
+                ctx.strokeStyle = '#007bff';
+                ctx.lineCap = 'round'; // Round line caps for a smoother look
+                ctx.lineWidth = 8;
+                ctx.stroke();
+
+                // Update the progress text
+                document.getElementById('progress-text').textContent = `${current + 1}/${total}`;
+            }
+
+            // Function to load and display the current question
+            function loadQuestion() {
+                // Ensure questions array is accessible and not out of bounds
+                if (currentQuestionIndex < questions.length) {
+                    // Get localized question text and options from translations
+                    const currentQuestionTextData = translations[currentLanguage].questions[currentQuestionIndex];
+                    questionText.textContent = currentQuestionTextData.question;
+                    optionsContainer.innerHTML = ''; // Clear previous answer buttons
+                    selectedOption = null; // Reset selected option
+
+                    // Create buttons for each answer option
+                    // Use the original 'questions' array for score data, and translated text for display
+                    questions[currentQuestionIndex].options.forEach((originalOption, index) => {
+                        const button = document.createElement('button');
+                        const translatedOptionText = currentQuestionTextData.options[index].text;
+                        // Add a generic emoji to button text
+                        button.textContent = `${translatedOptionText} ${translations[currentLanguage].option_emoji}`;
+                        button.dataset.index = index; // Store option index
+                        // Attach original score to the button's dataset for calculation
+                        button.dataset.scores = JSON.stringify(originalOption.score);
+                        button.addEventListener('click', () => selectOption(button, JSON.parse(button.dataset.scores)));
+                        optionsContainer.appendChild(button);
+                    });
+                    drawProgressBar(currentQuestionIndex, questions.length); // Update progress bar
+                } else {
+                    showResult(); // If all questions are answered, show the result
+                }
+            }
+
+            // Function to handle option selection (now auto-advances)
+            function selectOption(selectedButton, optionScore) {
+                // Remove 'selected' class from previously selected button
+                const previouslySelected = optionsContainer.querySelector('.selected');
+                if (previouslySelected) {
+                    previouslySelected.classList.remove('selected');
+                }
+
+                // Add 'selected' class to the currently selected button
+                selectedButton.classList.add('selected');
+                selectedOption = optionScore; // Store the score of the selected option
+
+                // Auto-advance after a short delay for visual feedback
+                setTimeout(() => {
+                    calculateScores();
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 300); // 0.3 second delay for smooth transition
+            }
+
+            // Function to calculate scores based on selected options
+            function calculateScores() {
+                if (selectedOption) {
+                    for (const typeScoreKey in selectedOption) {
+                        if (scores.hasOwnProperty(typeScoreKey)) {
+                            scores[typeScoreKey] += selectedOption[typeScoreKey];
+                        }
+                    }
+                }
+            }
+
+            // Function to determine the final personality type based on scores and user gender
+            function determineResult() {
+                let teto_type_key = '';
+                if (scores['teto_score'] > scores['egen_score']) {
+                    teto_type_key = 'Teto';
+                } else if (scores['egen_score'] > scores['teto_score']) {
+                    teto_type_key = 'Egen';
+                } else {
+                    // If Teto/Egen scores are tied, default to Teto for consistency
+                    teto_type_key = 'Teto';
+                }
+
+                let gender_suffix_key = '';
+                if (userGender === '남') {
+                    gender_suffix_key = 'Male';
+                } else if (userGender === '여') {
+                    gender_suffix_key = 'Female';
+                }
+
+                return teto_type_key + gender_suffix_key;
+            }
+
+            // Function to display the final result
+            function showResult() {
+                quizSection.style.display = 'none'; // Hide quiz section
+                resultSection.style.display = 'block'; // Show result section
+
+                const finalResultKey = determineResult(); // e.g., 'TetoMale', 'EgenFemale'
+                const finalResultData = translations[currentLanguage].results[finalResultKey];
+                const idealPartnerKey = translations[currentLanguage].ideal_partners[finalResultKey]; // e.g., 'EgenFemale'
+                const idealPartnerDisplayName = translations[currentLanguage].results[idealPartnerKey].name; // Get the localized name for the ideal partner
+
+                // Add emoji to the result type text and use localized name
+                resultType.textContent = `${finalResultData.emoji} ${finalResultData.name}`;
+
+                // Construct the description with scores and ideal partner
+                resultDescription.innerHTML = finalResultData.description +
+                                                `<br><br><strong>${translations[currentLanguage].teto_score_label}</strong> ${scores['teto_score']}` +
+                                                `<br><strong>${translations[currentLanguage].egen_score_label}</strong> ${scores['egen_score']}` +
+                                                translations[currentLanguage].ideal_partner_intro +
+                                                `<span style="font-weight: bold; color: #007bff;">${idealPartnerDisplayName}</span>`;
+
+                // Reset scores for a new test
+                for (const type in scores) {
+                    scores[type] = 0;
+                }
+            }
+
+            // Function to update all UI text based on the selected language
+            function updateUIForLanguage(lang) {
+                mainTitle.textContent = translations[lang].main_title;
+                genderSelectionTitle.textContent = translations[lang].gender_selection_title;
+                maleButton.textContent = translations[lang].male_button;
+                femaleButton.textContent = translations[lang].female_button;
+                resultSectionTitle.textContent = translations[lang].result_section_title;
+                restartButton.textContent = translations[lang].restart_button;
+
+                // If quiz section is active, reload question to update text
+                if (quizSection.style.display !== 'none') {
+                    loadQuestion();
+                }
+                // If result section is active, reload result to update text
+                if (resultSection.style.display !== 'none') {
+                    showResult(); // This will re-determine result and update description
+                }
+            }
+
+            // Function to toggle between light and dark themes
+            function toggleTheme() {
+                if (document.body.classList.contains('dark-mode')) {
+                    document.body.classList.remove('dark-mode');
+                    themeToggle.textContent = '☀️'; // Sun icon for light mode
+                    currentTheme = 'light';
+                } else {
+                    document.body.classList.add('dark-mode');
+                    themeToggle.textContent = '🌙'; // Moon icon for dark mode
+                    currentTheme = 'dark';
+                }
+                localStorage.setItem('theme', currentTheme); // Save theme preference
+            }
+
+            // Event listeners for gender selection
+            maleButton.addEventListener('click', () => {
+                userGender = '남';
+                genderSelectionSection.style.display = 'none';
+                quizSection.style.display = 'block';
+                currentQuestionIndex = 0; // Reset index when starting new quiz
+                loadQuestion();
+            });
+
+            femaleButton.addEventListener('click', () => {
+                userGender = '여';
+                genderSelectionSection.style.display = 'none';
+                quizSection.style.display = 'block';
+                currentQuestionIndex = 0; // Reset index when starting new quiz
+                loadQuestion();
+            });
+
+            // Event listener for language selection dropdown
+            languageSelect.addEventListener('change', (event) => {
+                currentLanguage = event.target.value;
+                localStorage.setItem('language', currentLanguage); // Save language preference
+                updateUIForLanguage(currentLanguage);
+            });
+
+            // Event listener for theme toggle button
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Event listener for the 'Restart' button
+            restartButton.addEventListener('click', () => {
+                currentQuestionIndex = 0; // Reset question index
+                selectedOption = null; // Reset selected option
+                // Reset scores
+                for (const key in scores) {
+                    scores[key] = 0;
+                }
+                resultSection.style.display = 'none'; // Hide result section
+                genderSelectionSection.style.display = 'block'; // Show gender selection again
+                updateUIForLanguage(currentLanguage); // Update text for restart
+            });
+
+            // Initial setup: Apply saved theme and language
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = '🌙';
+            } else {
+                themeToggle.textContent = '☀️';
+            }
+            languageSelect.value = currentLanguage; // Set dropdown to saved language
+            updateUIForLanguage(currentLanguage); // Update UI with initial language
+        });
+    </script>
+</body>
+</html>
