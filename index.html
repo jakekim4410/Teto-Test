@@ -9,6 +9,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
+            flex-direction: column; /* Allow content and ad to stack vertically */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -16,6 +17,7 @@
             margin: 0;
             color: #333;
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         /* Dark mode styles */
@@ -99,6 +101,8 @@
             max-width: 600px;
             position: relative; /* For canvas positioning */
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box; /* Include padding in width calculation */
+            margin-bottom: 20px; /* Space between content and ad */
         }
 
         /* Main title of the test */
@@ -129,6 +133,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         .gender-button:hover {
@@ -177,6 +182,7 @@
             line-height: 1.6;
             color: #555;
             transition: color 0.3s ease;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         /* Styles for the answer buttons */
@@ -196,6 +202,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px; /* Space between text and emoji */
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
+            user-select: none; /* Prevent text selection */
+            -webkit-user-select: none; /* For Safari */
+            -moz-user-select: none; /* For Firefox */
+            -ms-user-select: none; /* For IE/Edge */
+            touch-action: manipulation; /* Prevent default touch actions like double-tap zoom */
         }
 
         /* Hover effect for answer buttons */
@@ -228,6 +240,7 @@
             gap: 8px; /* Space between text and emoji */
             margin-left: auto; /* Center the button */
             margin-right: auto;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         /* Hover effect for 'Restart' button */
@@ -253,6 +266,7 @@
             justify-content: center;
             gap: 10px; /* Space between text and emoji */
             transition: color 0.3s ease;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         /* Style for the description of the personality type */
@@ -263,6 +277,7 @@
             margin-bottom: 30px;
             text-align: left; /* Align description text to left */
             transition: color 0.3s ease;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         /* Language and Theme controls */
@@ -282,6 +297,7 @@
             font-size: 1em;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            word-break: keep-all; /* Prevent text breaking in the middle of words */
         }
 
         body.dark-mode .controls select {
@@ -302,6 +318,15 @@
         body.dark-mode .theme-toggle-button {
             color: #f0f0f0; /* Dark mode icon color */
         }
+
+        /* Ad container styling */
+        #ad-container {
+            margin: 20px auto; /* Center horizontally with auto margins */
+            text-align: center;
+            width: 100%; /* Take full width of its parent */
+            max-width: 320px; /* Max width for the ad unit */
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
     </style>
 </head>
 <body>
@@ -321,7 +346,7 @@
 
         <!-- Gender Selection Section -->
         <div id="gender-selection-section">
-            <h2 id="gender-selection-title">당신의 성별을 선택해주세요. </h2>
+            <h2 id="gender-selection-title">당신의 성별을 선택해주세요. 🚻</h2>
             <button id="male-button" class="gender-button">남성 ♂️</button>
             <button id="female-button" class="gender-button">여성 ♀️</button>
         </div>
@@ -345,6 +370,15 @@
             <p id="result-description"></p>
             <button id="restart-button">다시 테스트하기 🔄</button>
         </div>
+    </div>
+
+    <!-- Kakao AdSense Code -->
+    <div id="ad-container">
+        <ins class="kakao_ad_area" style="display:none;"
+        data-ad-unit = "DAN-PKp0vxyL2QolKDIu"
+        data-ad-width = "320"
+        data-ad-height = "100"></ins>
+        <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
     </div>
 
     <script>
@@ -501,7 +535,7 @@
             const translations = {
                 'ko': {
                     'main_title': '테토-에겐 성격 유형 테스트 ✨',
-                    'gender_selection_title': '당신의 성별을 선택해주세요.',
+                    'gender_selection_title': '당신의 성별을 선택해주세요. 🚻',
                     'male_button': '남성 ♂️',
                     'female_button': '여성 ♀️',
                     'result_section_title': '당신의 성격 유형은... 🎉',
@@ -646,7 +680,8 @@
                         { question: "新しい環境に置かれたとき、あなたの最初の反応は？🗺️", options: [{ text: "周囲を観察し情報を収集し、適応する方法を模索します。" }, { text: "好奇心を持って探索し、どんな面白いことが起こるか期待します。" }, { text: "慣れない環境に多少の不安を感じますが、すぐに慣れようと努力します。" }] },
                         { question: "人々と協力して働くとき、あなたが最も重要視することは何ですか？🤝", options: [{ text: "明確な役割分担と効率的な業務処理。" }, { text: "自由な意見交換と創造的な相乗効果。" }, { text: "互いに尊重し合い、調和の取れた協力関係。" }] },
                         { question: "未来を計画する際、あなたは主にどのような絵を描きますか？🔮", options: [{ text: "段階的な目標を設定し、達成可能なロードマップを構想します。" }, { text: "様々な可能性を残し、変化に柔軟に対応する準備をします。" }, { text: "現在に忠実で、未来は自然に流れるに任せます。" }] },
-                        { question: "あなたの社会生活は主にどのようなものですか？👥", options: [{ text: "友達や約束が多く、じっとしているのが苦手で活動量が多いです。" }, { text: "一人の時間を大切にし、動きよりも静的な活動を好みます。" }, { text: "必要に応じて活動的になり、時には一人の時間も楽しみます。" }] },
+                        { question: "あなたの社会生活は主にどのようなものですか？👥", options: [{ text: "友達や約束が多く、じっとしているのが苦手で活動量が多いです。" }, { text: "一人の時間を大切にし、動きよりも静的な活動を好みます。" },
+                        { text: "必要に応じて活動的이고, 때로는 혼자만의 시간도 즐깁니다." }] },
                         { question: "ファッションや外見管理について、あなたの考えは？👕", options: [{ text: "あまり興味がないか、シンプルでクラシックなスタイルを好みます。" }, { text: "トレンドに敏感で美的センスに優れており、SNSを飾るのが得意です。" }, { text: "快適さと実用性を最も重視します。" }] },
                         { question: "恋愛関係で衝突が起きたとき、あなたの態度は？💔", options: [{ text: "衝突を避けず、直接向き合って解決する方です。" }, { text: "感情の流れに敏感で、繊細で共感的な交流を重視します。" }, { text: "衝突を避けようとしますが、必要であれば対話を通じて解決しようと努力します。" }] },
                         { question: "愛情表現は主にどのような形ですか？❤️", options: [{ text: "感情よりも行動で表現し、実質的な報酬を与える方です。" }, { text: "言葉や雰囲気で感情を伝え、愛嬌や感情的なコミュニケーションが得意です。" }, { text: "相手のニーズに合わせて表現方法を調整します。" }] },
@@ -682,9 +717,9 @@
                     'questions': [
                         { question: "¿Al iniciar un nuevo proyecto, en qué piensas primero? 💡", options: [{ text: "Identifico objetivos específicos, plazos y recursos necesarios." }, { text: "Hago una lluvia de ideas de todas las posibilidades y exploro direcciones interesantes." }, { text: "Analizo casos de éxito existentes y busco puntos de mejora en base a ellos." }] },
                         { question: "¿Cuando surge un problema, cómo sueles responder? ❓", options: [{ text: "Encuentro la solución más eficiente y factible y la ejecuto de inmediato." }, { text: "Exploro profundamente la causa raíz del problema y considero alternativas creativas." }, { text: "Escucho las opiniones de expertos relevantes y actúo con cautela." }] },
-                        { question: "¿En la vida diaria, qué enfoque prefieres? 🤔", options: [{ text: "Me gusta planificar y apegarme a mis planes, prefiriendo la previsibilidad." }, { text: "Me muevo espontáneamente y con flexibilidad según la situación, buscando nuevas experiencias." }, { text: "Establezco un marco general y decido los detalles sobre la marcha." }] },
+                        { question: "En la vida diaria, ¿qué enfoque prefieres? 🤔", options: [{ text: "Me gusta planificar y apegarme a mis planes, prefiriendo la previsibilidad." }, { text: "Me muevo espontáneamente y con flexibilidad según la situación, buscando nuevas experiencias." }, { text: "Establezco un marco general y decido los detalles sobre la marcha." }] },
                         { question: "¿Al tomar decisiones, qué es más importante para ti? ⚖️", options: [{ text: "La racionalidad basada en el análisis lógico y datos objetivos." }, { text: "La intuición y la inspiración, y la libertad basada en valores personales." }, { text: "Escuchar suficientemente las opiniones de quienes me rodean antes de decidir." }] },
-                        { question: "¿Cómo sueles aliviar el estrés? 😌", options: [{ text: "Intento recuperar el control perfeccionando tareas u organizando cosas." }, { text: "Busco nuevos pasatiempos o pruebo actividades interesantes para cambiar mi estado de ánimo." }, { text: "Paso tiempo a solas y reflexiono tranquilamente." }] },
+                        { question: "Cómo sueles aliviar el estrés? 😌", options: [{ text: "Intento recuperar el control perfeccionando tareas u organizando cosas." }, { text: "Busco nuevos pasatiempos o pruebo actividades interesantes para cambiar mi estado de ánimo." }, { text: "Paso tiempo a solas y reflexiono tranquilamente." }] },
                         { question: "¿Cuál es tu primera reacción al encontrarte en un nuevo entorno? 🗺️", options: [{ text: "Observo mi entorno, recopilo información y busco formas de adaptarme." }, { text: "Exploro con curiosidad, anticipando qué cosas interesantes podrían suceder." }, { text: "Siento una ligera ansiedad por los entornos desconocidos, pero intento acostumbrarme rápidamente." }] },
                         { question: "¿Qué valoras más al trabajar con otros? 🤝", options: [{ text: "La clara división de roles y el procesamiento eficiente de tareas." }, { text: "El libre intercambio de ideas y la sinergia creativa." }, { text: "Un ambiente de respeto mutuo y cooperación armoniosa." }] },
                         { question: "¿Al planificar el futuro, qué tipo de imagen sueles visualizar? 🔮", options: [{ text: "Establezco metas paso a paso y diseño una hoja de ruta factible." }, { text: "Mantengo varias posibilidades abiertas y me preparo para responder con flexibilidad a los cambios." }, { text: "Me centro en el presente, dejando que el futuro se desarrolle de forma natural." }] },
@@ -693,7 +728,7 @@
                         { question: "¿Cuando surge un conflicto en una relación, cuál es tu actitud? 💔", options: [{ text: "En lugar de evitar el conflicto, lo enfrento y lo resuelvo directamente." }, { text: "Soy sensible al flujo emocional y valoro las interacciones delicadas y empáticas." }, { text: "Intento evitar el conflicto, pero si es necesario, intento resolverlo a través del diálogo." }] },
                         { question: "¿Cómo sueles expresar afecto? ❤️", options: [{ text: "Me expreso con acciones más que con emociones, brindando recompensas prácticas." }, { text: "Transmito emociones con palabras o el ambiente, y soy bueno/a mostrando afecto y comunicación emocional." }, { text: "Ajusto mi estilo de expresión según las necesidades de la otra persona." }] },
                         { question: "Al encontrarte con nuevos conocimientos o habilidades, ¿cuál es tu actitud? 🧠", options: [{ text: "Disfruto aprendiendo nuevas tecnologías o herramientas." }, { text: "Me interesa apreciar o crear obras de arte." }, { text: "Me gusta adquirir conocimientos prácticos y aplicarlos de inmediato." }] },
-                        { question: "¿Qué buscas en el trabajo o en los proyectos? 🏆", options: [{ text: "Encuentro satisfacción al lograr los mejores resultados en un entorno competitivo." }, { text: "Valoro crecer juntos en un ambiente colaborativo." }, { text: "Busco tanto el rendimiento individual como la armonía del equipo." }] },
+                        { question: "Qué buscas en el trabajo o en los proyectos? 🏆", options: [{ text: "Encuentro satisfacción al lograr los mejores resultados en un entorno competitivo." }, { text: "Valoro crecer juntos en un ambiente colaborativo." }, { text: "Busco tanto el rendimiento individual como la armonía del equipo." }] },
                         { question: "Al planificar un viaje, ¿cuál es tu prioridad? ✈️", options: [{ text: "Priorizo rutas eficientes y la reserva de alojamiento." }, { text: "Viajo para experimentar nuevas culturas y anticipar encuentros inesperados." }, { text: "Disfruto explorando gemas ocultas en lugar de lugares turísticos famosos." }] }
                     ],
                     'results': {
