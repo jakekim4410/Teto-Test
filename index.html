@@ -5,413 +5,398 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>테토-에겐 성격 유형 테스트</title>
     <style>
-        /* Body styles: Centers the content vertically and horizontally, sets basic font and background */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column; /* 모든 요소를 기본적으로 세로로 쌓도록 변경 */
-            justify-content: flex-start; /* 상단부터 정렬 */
-            align-items: center; /* 모든 자식 요소를 가로 중앙에 정렬 */
-            min-height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
-            color: #333;
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-            padding: 20px; /* Add some padding around the whole page */
-            box-sizing: border-box;
-        }
+<style>
+    /* Body styles: Centers the content vertically and horizontally, sets basic font and background */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column; /* 모든 요소를 기본적으로 세로로 쌓도록 변경 */
+        justify-content: flex-start; /* 상단부터 정렬 */
+        align-items: center; /* 모든 자식 요소를 가로 중앙에 정렬 */
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        margin: 0;
+        color: #333;
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        padding: 20px; /* Add some padding around the whole page */
+        box-sizing: border-box;
+    }
 
-        /* Dark mode styles */
-        body.dark-mode {
-            background-color: #2c2c2c;
-            color: #e0e0e0;
-        }
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: #2c2c2c;
+        color: #e0e0e0;
+    }
 
-        body.dark-mode .container {
-            background-color: #3a3a3a;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
+    body.dark-mode .container {
+        background-color: #3a3a3a;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
 
-        body.dark-mode h1,
-        body.dark-mode h2,
-        body.dark-mode #question-text {
-            color: #f0f0f0;
-        }
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode #question-text {
+        color: #f0f0f0;
+    }
 
-        body.dark-mode #options-container button {
-            background-color: #4a4a4a;
-            border-color: #555;
-            color: #e0e0e0;
-        }
+    body.dark-mode #options-container button {
+        background-color: #4a4a4a;
+        border-color: #555;
+        color: #e0e0e0;
+    }
 
-        body.dark-mode #options-container button:hover {
-            background-color: #5a5a5a;
-            border-color: #888;
-        }
+    body.dark-mode #options-container button:hover {
+        background-color: #5a5a5a;
+        border-color: #888;
+    }
 
-        body.dark-mode #options-container button.selected {
-            background-color: #0056b3; /* Darker blue for selected in dark mode */
-            border-color: #0056b3;
-            color: #fff;
-        }
+    body.dark-mode #options-container button.selected {
+        background-color: #0056b3; /* Darker blue for selected in dark mode */
+        border-color: #0056b3;
+        color: #fff;
+    }
 
-        body.dark-mode .gender-button {
-            background-color: #0056b3;
-        }
+    body.dark-mode .gender-button {
+        background-color: #0056b3;
+    }
 
-        body.dark-mode .gender-button:hover {
-            background-color: #003f80;
-        }
+    body.dark-mode .gender-button:hover {
+        background-color: #003f80;
+    }
 
-        body.dark-mode #female-button {
-            background-color: #c45293; /* Darker pink for female in dark mode */
-        }
+    body.dark-mode #female-button {
+        background-color: #c45293; /* Darker pink for female in dark mode */
+    }
 
-        body.dark-mode #female-button:hover {
-            background-color: #a3427a;
-        }
+    body.dark-mode #female-button:hover {
+        background-color: #a3427a;
+    }
 
-        body.dark-mode button#restart-button {
-            background-color: #1e7e34;
-        }
+    body.dark-mode button#restart-button {
+        background-color: #1e7e34;
+    }
 
-        body.dark-mode button#restart-button:hover {
-            background-color: #155d28;
-        }
+    body.dark-mode button#restart-button:hover {
+        background-color: #155d28;
+    }
 
-        body.dark-mode #result-section h2 {
-            color: #66b3ff; /* Lighter blue for result heading in dark mode */
-        }
+    body.dark-mode #result-section h2 {
+        color: #66b3ff; /* Lighter blue for result heading in dark mode */
+    }
 
-        body.dark-mode #result-type {
-            color: #ff9999; /* Lighter red for result type in dark mode */
-        }
+    body.dark-mode #result-type {
+        color: #ff9999; /* Lighter red for result type in dark mode */
+    }
 
-        body.dark-mode #result-description {
-            color: #c0c0c0;
-        }
+    body.dark-mode #result-description {
+        color: #c0c0c0;
+    }
 
-        /* Container for the entire test application */
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 90%;
-            max-width: 600px;
-            position: relative; /* For canvas positioning */
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-sizing: border-box; /* Include padding in width calculation */
-            margin: 20px; /* Space around the main container */
-            flex-shrink: 0; /* Prevent shrinking on smaller screens */
-        }
+    /* Container for the entire test application */
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    /* [핵심 수정 2] 좌우 마진을 제거하여 gap 속성과 중복되지 않게 합니다. */
+    margin: 0; 
+    flex-shrink: 0;
+}
 
-        /* Main title of the test */
-        h1 {
-            color: #4a4a4a;
-            margin-bottom: 30px;
-            font-size: 2em;
-            transition: color 0.3s ease;
-        }
+    /* Main title of the test */
+    h1 {
+        color: #4a4a4a;
+        margin-bottom: 30px;
+        font-size: 2em;
+        transition: color 0.3s ease;
+    }
 
-        /* Sections for gender selection, quiz, and result, with internal padding */
-        #gender-selection-section, #quiz-section, #result-section {
-            padding: 20px 0;
-        }
+    /* Sections for gender selection, quiz, and result, with internal padding */
+    #gender-selection-section, #quiz-section, #result-section {
+        padding: 20px 0;
+    }
 
-        /* Styles for gender selection buttons */
-        .gender-button {
-            background-color: #007bff;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.5em;
-            cursor: pointer;
-            margin: 10px;
-            transition: background-color 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    /* Styles for gender selection buttons */
+    .gender-button {
+        background-color: #007bff;
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.5em;
+        cursor: pointer;
+        margin: 10px;
+        transition: background-color 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        .gender-button:hover {
-            background-color: #0056b3;
-        }
+    .gender-button:hover {
+        background-color: #0056b3;
+    }
 
-        /* Specific color for the female gender button */
-        #female-button {
-            background-color: #ff69b4; /* Pink color for female */
-        }
+    /* Specific color for the female gender button */
+    #female-button {
+        background-color: #ff69b4; /* Pink color for female */
+    }
 
-        #female-button:hover {
-            background-color: #e0569d; /* Darker pink on hover */
-        }
+    #female-button:hover {
+        background-color: #e0569d; /* Darker pink on hover */
+    }
 
-        /* Container for the progress bar (canvas + text) */
-        #progress-container {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px; /* Center alignment and bottom margin */
-            position: relative;
-        }
+    /* Container for the progress bar (canvas + text) */
+    #progress-container {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px; /* Center alignment and bottom margin */
+        position: relative;
+    }
 
-        /* Canvas element for drawing the progress circle */
-        #progress-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    /* Canvas element for drawing the progress circle */
+    #progress-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 
-        /* Text displaying current question number / total questions */
-        #progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #007bff;
-        }
+    /* Text displaying current question number / total questions */
+    #progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #007bff;
+    }
 
-        /* Style for the question text */
-        #question-text {
-            font-size: 1.5em;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            color: #555;
-            transition: color 0.3s ease;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    /* Style for the question text */
+    #question-text {
+        font-size: 1.5em;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        color: #555;
+        transition: color 0.3s ease;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        /* Styles for the answer buttons */
-        #options-container button {
-            display: block; /* Each button on a new line */
-            width: 100%;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background-color: #fff;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-sizing: border-box; /* Include padding in width calculation */
-            display: flex; /* Use flexbox for button content alignment */
-            align-items: center;
-            justify-content: center;
-            gap: 8px; /* Space between text and emoji */
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-            user-select: none; /* Prevent text selection */
-            -webkit-user-select: none; /* For Safari */
-            -moz-user-select: none; /* For Firefox */
-            -ms-user-select: none; /* For IE/Edge */
-            touch-action: manipulation; /* Prevent default touch actions like double-tap zoom */
-        }
+    /* Styles for the answer buttons */
+    #options-container button {
+        display: block; /* Each button on a new line */
+        width: 100%;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-sizing: border-box; /* Include padding in width calculation */
+        display: flex; /* Use flexbox for button content alignment */
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* Space between text and emoji */
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+        user-select: none; /* Prevent text selection */
+        -webkit-user-select: none; /* For Safari */
+        -moz-user-select: none; /* For Firefox */
+        -ms-user-select: none; /* For IE/Edge */
+        touch-action: manipulation; /* Prevent default touch actions like double-tap zoom */
+    }
 
-        /* Hover effect for answer buttons */
-        #options-container button:hover {
-            background-color: #e8f0fe;
-            border-color: #a0c4ff;
-        }
+    /* Hover effect for answer buttons */
+    #options-container button:hover {
+        background-color: #e8f0fe;
+        border-color: #a0c4ff;
+    }
 
-        /* Style for the selected answer button */
-        #options-container button.selected {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
+    /* Style for the selected answer button */
+    #options-container button.selected {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
 
-        /* Styles for the 'Restart' button */
-        button#restart-button {
-            background-color: #28a745;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            cursor: pointer;
-            margin-top: 25px;
-            transition: background-color 0.3s ease;
-            display: flex; /* Use flexbox for button content alignment */
-            align-items: center;
-            justify-content: center;
-            gap: 8px; /* Space between text and emoji */
-            margin-left: auto; /* Center the button */
-            margin-right: auto;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    /* Styles for the 'Restart' button */
+    button#restart-button {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: background-color 0.3s ease;
+        display: flex; /* Use flexbox for button content alignment */
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* Space between text and emoji */
+        margin-left: auto; /* Center the button */
+        margin-right: auto;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        /* Hover effect for 'Restart' button */
-        button#restart-button:hover {
-            background-color: #218838;
-        }
+    /* Hover effect for 'Restart' button */
+    button#restart-button:hover {
+        background-color: #218838;
+    }
 
-        /* Style for the result section heading */
-        #result-section h2 {
-            color: #007bff;
-            margin-bottom: 15px;
-            transition: color 0.3s ease;
-        }
+    /* Style for the result section heading */
+    #result-section h2 {
+        color: #007bff;
+        margin-bottom: 15px;
+        transition: color 0.3s ease;
+    }
 
-        /* Style for the determined personality type */
-        #result-type {
-            font-size: 2.2em;
-            color: #ff6f61; /* Color suitable for Tet-Egen theme */
-            margin-bottom: 20px;
-            font-weight: bold;
-            display: flex; /* Use flexbox for text and emoji alignment */
-            align-items: center;
-            justify-content: center;
-            gap: 10px; /* Space between text and emoji */
-            transition: color 0.3s ease;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    /* Style for the determined personality type */
+    #result-type {
+        font-size: 2.2em;
+        color: #ff6f61; /* Color suitable for Tet-Egen theme */
+        margin-bottom: 20px;
+        font-weight: bold;
+        display: flex; /* Use flexbox for text and emoji alignment */
+        align-items: center;
+        justify-content: center;
+        gap: 10px; /* Space between text and emoji */
+        transition: color 0.3s ease;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        /* Style for the description of the personality type */
-        #result-description {
-            font-size: 1.1em;
-            line-height: 1.7;
-            color: #666;
-            margin-bottom: 30px;
-            text-align: left; /* Align description text to left */
-            transition: color 0.3s ease;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    /* Style for the description of the personality type */
+    #result-description {
+        font-size: 1.1em;
+        line-height: 1.7;
+        color: #666;
+        margin-bottom: 30px;
+        text-align: left; /* Align description text to left */
+        transition: color 0.3s ease;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        /* Language and Theme controls */
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 0 10px;
-            width: 100%; /* 컨트롤도 중앙 컨테이너의 너비에 맞춤 */
-            max-width: 600px; /* 최대 너비도 설정 */
-        }
+    /* Language and Theme controls */
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 0 10px;
+        width: 100%; /* 컨트롤도 중앙 컨테이너의 너비에 맞춤 */
+        max-width: 600px; /* 최대 너비도 설정 */
+    }
 
-        .controls select {
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-            word-break: keep-all; /* Prevent text breaking in the middle of words */
-        }
+    .controls select {
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        word-break: keep-all; /* Prevent text breaking in the middle of words */
+    }
 
-        body.dark-mode .controls select {
-            background-color: #4a4a4a;
-            color: #e0e0e0;
-            border-color: #555;
-        }
+    body.dark-mode .controls select {
+        background-color: #4a4a4a;
+        color: #e0e0e0;
+        border-color: #555;
+    }
 
-        .theme-toggle-button {
-            background: none;
-            border: none;
-            font-size: 1.8em;
-            cursor: pointer;
-            color: #4a4a4a; /* Default icon color */
-            transition: color 0.3s ease;
-        }
+    .theme-toggle-button {
+        background: none;
+        border: none;
+        font-size: 1.8em;
+        cursor: pointer;
+        color: #4a4a4a; /* Default icon color */
+        transition: color 0.3s ease;
+    }
 
-        body.dark-mode .theme-toggle-button {
-            color: #f0f0f0; /* Dark mode icon color */
-        }
+    body.dark-mode .theme-toggle-button {
+        color: #f0f0f0; /* Dark mode icon color */
+    }
 
-        /* Ad container styling */
-        .ad-container { /* Changed id to class for multiple ad containers */
-            margin: 20px auto; /* Center horizontally with auto margins */
-            text-align: center;
-            width: 100%; /* Take full width of its parent */
-            max-width: 320px; /* Max width for the ad unit */
-            box-sizing: border-box; /* Include padding in width calculation */
-        }
+    /* Ad container styling */
+    .ad-container { /* Changed id to class for multiple ad containers */
+        margin: 20px auto; /* Center horizontally with auto margins */
+        text-align: center;
+        width: 100%; /* Take full width of its parent */
+        max-width: 320px; /* Max width for the ad unit */
+        box-sizing: border-box; /* Include padding in width calculation */
+    }
 
-        /* Flex container for main content and side ads */
+/* Flex container for main content and side ads */
+.main-content-wrapper {
+    display: flex;
+    justify-content: center; /* 내부 요소들을 중앙 정렬 */
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    /* [핵심 수정 1] 상하 여백은 20px, 좌우 여백은 auto로 설정하여 블록 자체를 중앙 정렬합니다. */
+    margin: 20px auto; 
+    /* [개선] 내부 요소들(광고, 콘텐츠) 사이에 30px의 일정한 간격을 추가합니다. */
+    gap: 30px; 
+}
+
+    /* Styling for side ads */
+.side-ad-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /* [핵심 수정 3] 좌우 마진을 제거하여 gap 속성과 중복되지 않게 합니다. */
+    margin: 0; 
+    flex-shrink: 0;
+}
+    /* 마지막 사이드 광고에는 하단 마진 제거 */
+    .side-ad-container ins:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Media queries for responsiveness */
+    @media (max-width: 1000px) {
         .main-content-wrapper {
-            display: flex; /* 내부 요소를 가로로 정렬 */
-            justify-content: center; /* 중앙 정렬 */
-            align-items: flex-start; /* 상단 정렬 */
-            width: 100%; /* 부모 너비의 100% 사용 */
-            max-width: 1200px; /* 전체 레이아웃의 최대 너비 설정 */
-            margin: 20px 0; /* 상하 여백 */
+            flex-direction: column; /* 메인 콘텐츠와 사이드 광고를 세로로 쌓기 */
+            align-items: center; /* 중앙 정렬 */
         }
-
-        /* Styling for side ads */
+        
+        /* [이곳이 핵심] 모바일/태블릿 환경에서는 좌우측 광고를 숨깁니다. */
         .side-ad-container {
-            display: flex;
-            flex-direction: column; /* 사이드 광고는 세로로 쌓이도록 */
-            justify-content: flex-start; /* 상단 정렬 */
-            align-items: center;
-            margin: 0 20px; /* 메인 콘텐츠와의 좌우 여백 */
-            flex-shrink: 0; /* Prevent shrinking */
-            /* height: 100%; 제거 - 높이는 광고 자체에서 결정되도록 */
-        }
-        .side-ad-container ins {
-             margin-bottom: 20px; /* 개별 사이드 광고 간의 간격 */
-        }
-        /* 마지막 사이드 광고에는 하단 마진 제거 */
-        .side-ad-container ins:last-child {
-            margin-bottom: 0;
+            display: none;
         }
 
+        .container {
+            margin: 20px 0; /* Adjust margin for stacked layout */
+        }
+    }
 
-        /* Media queries for responsiveness */
-        @media (max-width: 1000px) {
-            .main-content-wrapper {
-                flex-direction: column; /* 메인 콘텐츠와 사이드 광고를 세로로 쌓기 */
-                align-items: center; /* 중앙 정렬 */
-            }
-
-            .container {
-                margin: 20px 0; /* Adjust margin for stacked layout */
-            }
-
-            .side-ad-container {
-                flex-direction: row; /* 사이드 광고를 가로로 정렬 */
-                justify-content: center;
-                gap: 20px; /* 사이드 광고 간의 간격 */
-                max-width: 100%;
-                margin: 20px 0; /* 위아래 여백 */
-            }
-
-            .side-ad-container ins {
-                max-width: 160px; /* 개별 광고의 최대 너비 */
-                height: 600px; /* 세로 광고 높이 유지 */
-                margin-bottom: 0; /* 가로 정렬 시 하단 마진 제거 */
-            }
+    @media (max-width: 768px) {
+        .gender-button {
+            font-size: 1.2em;
+            padding: 12px 20px;
         }
 
-        @media (max-width: 768px) {
-            .gender-button {
-                font-size: 1.2em;
-                padding: 12px 20px;
-            }
-
-            #question-text {
-                font-size: 1.3em;
-            }
-
-            #options-container button {
-                font-size: 1em;
-                padding: 12px 15px;
-            }
-
-            .side-ad-container {
-                flex-direction: column; /* 아주 작은 화면에서는 사이드 광고도 다시 세로로 쌓기 */
-                gap: 0; /* 간격 제거 */
-            }
-            .side-ad-container ins {
-                margin-bottom: 20px; /* 세로로 쌓일 때 다시 마진 추가 */
-            }
+        #question-text {
+            font-size: 1.3em;
         }
-    </style>
+
+        #options-container button {
+            font-size: 1em;
+            padding: 12px 15px;
+        }
+        /* 더 작은 화면에서도 side-ad-container는 이미 display: none 상태이므로 추가 규칙이 필요 없습니다. */
+    }
+</style>
     <meta name="google-site-verification" content="gPRCmIqx-APsvWwdJKBr5nCFDOOODh7lriZfMGz0fGs" />
     <!-- Kakao AdSense Script - Moved to head for early loading -->
     <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
