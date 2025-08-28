@@ -320,17 +320,29 @@
         }
 
         /* Ad container styling */
-        #ad-container {
+        .ad-container { /* Changed id to class for multiple ad containers */
             margin: 20px auto; /* Center horizontally with auto margins */
             text-align: center;
             width: 100%; /* Take full width of its parent */
             max-width: 320px; /* Max width for the ad unit */
             box-sizing: border-box; /* Include padding in width calculation */
+            /* Removed display:none; */
         }
     </style>
     <meta name="google-site-verification" content="gPRCmIqx-APsvWwdJKBr5nCFDOOODh7lriZfMGz0fGs" />
+    <!-- Kakao AdSense Script - Moved to head for early loading -->
+    <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
 </head>
 <body>
+    <!-- Top Kakao AdSense Code -->
+    <div class="ad-container" id="top-ad-container">
+        <ins class="kakao_ad_area" style="width:320px; height:100px;"
+        data-ad-unit = "DAN-AyUPozwq7XoexHex"
+        data-ad-width = "320"
+        data-ad-height = "100"></ins>
+        <!-- Removed redundant script tag here -->
+    </div>
+
     <div class="container">
         <div class="controls">
             <select id="language-select">
@@ -373,13 +385,13 @@
         </div>
     </div>
 
-    <!-- Kakao AdSense Code -->
-    <div id="ad-container">
-        <ins class="kakao_ad_area" style="display:none;"
+    <!-- Bottom Kakao AdSense Code -->
+    <div class="ad-container" id="bottom-ad-container">
+        <ins class="kakao_ad_area" style="width:320px; height:100px;"
         data-ad-unit = "DAN-PKp0vxyL2QolKDIu"
         data-ad-width = "320"
         data-ad-height = "100"></ins>
-        <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+        <!-- Removed redundant script tag here -->
     </div>
 
     <script>
