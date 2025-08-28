@@ -9,15 +9,17 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column; /* Allow content and ad to stack vertically */
-            justify-content: center;
-            align-items: center;
+            flex-direction: column; /* 모든 요소를 기본적으로 세로로 쌓도록 변경 */
+            justify-content: flex-start; /* 상단부터 정렬 */
+            align-items: center; /* 모든 자식 요소를 가로 중앙에 정렬 */
             min-height: 100vh;
             background-color: #f0f2f5;
             margin: 0;
             color: #333;
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
             overflow-x: hidden; /* Prevent horizontal scrolling */
+            padding: 20px; /* Add some padding around the whole page */
+            box-sizing: border-box;
         }
 
         /* Dark mode styles */
@@ -102,7 +104,8 @@
             position: relative; /* For canvas positioning */
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             box-sizing: border-box; /* Include padding in width calculation */
-            margin-bottom: 20px; /* Space between content and ad */
+            margin: 20px; /* Space around the main container */
+            flex-shrink: 0; /* Prevent shrinking on smaller screens */
         }
 
         /* Main title of the test */
@@ -287,6 +290,8 @@
             align-items: center;
             margin-bottom: 20px;
             padding: 0 10px;
+            width: 100%; /* 컨트롤도 중앙 컨테이너의 너비에 맞춤 */
+            max-width: 600px; /* 최대 너비도 설정 */
         }
 
         .controls select {
@@ -326,7 +331,85 @@
             width: 100%; /* Take full width of its parent */
             max-width: 320px; /* Max width for the ad unit */
             box-sizing: border-box; /* Include padding in width calculation */
-            /* Removed display:none; */
+        }
+
+        /* Flex container for main content and side ads */
+        .main-content-wrapper {
+            display: flex; /* 내부 요소를 가로로 정렬 */
+            justify-content: center; /* 중앙 정렬 */
+            align-items: flex-start; /* 상단 정렬 */
+            width: 100%; /* 부모 너비의 100% 사용 */
+            max-width: 1200px; /* 전체 레이아웃의 최대 너비 설정 */
+            margin: 20px 0; /* 상하 여백 */
+        }
+
+        /* Styling for side ads */
+        .side-ad-container {
+            display: flex;
+            flex-direction: column; /* 사이드 광고는 세로로 쌓이도록 */
+            justify-content: flex-start; /* 상단 정렬 */
+            align-items: center;
+            margin: 0 20px; /* 메인 콘텐츠와의 좌우 여백 */
+            flex-shrink: 0; /* Prevent shrinking */
+            /* height: 100%; 제거 - 높이는 광고 자체에서 결정되도록 */
+        }
+        .side-ad-container ins {
+             margin-bottom: 20px; /* 개별 사이드 광고 간의 간격 */
+        }
+        /* 마지막 사이드 광고에는 하단 마진 제거 */
+        .side-ad-container ins:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* Media queries for responsiveness */
+        @media (max-width: 1000px) {
+            .main-content-wrapper {
+                flex-direction: column; /* 메인 콘텐츠와 사이드 광고를 세로로 쌓기 */
+                align-items: center; /* 중앙 정렬 */
+            }
+
+            .container {
+                margin: 20px 0; /* Adjust margin for stacked layout */
+            }
+
+            .side-ad-container {
+                flex-direction: row; /* 사이드 광고를 가로로 정렬 */
+                justify-content: center;
+                gap: 20px; /* 사이드 광고 간의 간격 */
+                max-width: 100%;
+                margin: 20px 0; /* 위아래 여백 */
+            }
+
+            .side-ad-container ins {
+                max-width: 160px; /* 개별 광고의 최대 너비 */
+                height: 600px; /* 세로 광고 높이 유지 */
+                margin-bottom: 0; /* 가로 정렬 시 하단 마진 제거 */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gender-button {
+                font-size: 1.2em;
+                padding: 12px 20px;
+            }
+
+            #question-text {
+                font-size: 1.3em;
+            }
+
+            #options-container button {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+
+            .side-ad-container {
+                flex-direction: column; /* 아주 작은 화면에서는 사이드 광고도 다시 세로로 쌓기 */
+                gap: 0; /* 간격 제거 */
+            }
+            .side-ad-container ins {
+                margin-bottom: 20px; /* 세로로 쌓일 때 다시 마진 추가 */
+            }
         }
     </style>
     <meta name="google-site-verification" content="gPRCmIqx-APsvWwdJKBr5nCFDOOODh7lriZfMGz0fGs" />
@@ -340,48 +423,66 @@
         data-ad-unit = "DAN-AyUPozwq7XoexHex"
         data-ad-width = "320"
         data-ad-height = "100"></ins>
-        <!-- Removed redundant script tag here -->
     </div>
 
-    <div class="container">
-        <div class="controls">
-            <select id="language-select">
-                <option value="ko">한국어 🇰🇷</option>
-                <option value="en">English 🇬🇧</option>
-                <option value="zh">中文 🇨🇳</option>
-                <option value="ja">日本語 🇯🇵</option>
-                <option value="es">Español 🇪🇸</option>
-            </select>
-            <button id="theme-toggle" class="theme-toggle-button">☀️</button>
+    <!-- Main content and side ads wrapper -->
+    <div class="main-content-wrapper">
+        <!-- Left Side Kakao AdSense Code -->
+        <div class="side-ad-container" id="left-side-ad">
+            <ins class="kakao_ad_area" style="width:160px; height:600px;"
+            data-ad-unit = "DAN-v8UxsfGORk9YILNR"
+            data-ad-width = "160"
+            data-ad-height = "600"></ins>
         </div>
 
-        <h1 id="main-title">테토-에겐 성격 유형 테스트 ✨</h1>
-
-        <!-- Gender Selection Section -->
-        <div id="gender-selection-section">
-            <h2 id="gender-selection-title">당신의 성별을 선택해주세요. 🚻</h2>
-            <button id="male-button" class="gender-button">남성 ♂️</button>
-            <button id="female-button" class="gender-button">여성 ♀️</button>
-        </div>
-
-        <!-- Quiz Section (initially hidden) -->
-        <div id="quiz-section" style="display: none;">
-            <div id="progress-container">
-                <canvas id="progress-canvas" width="80" height="80"></canvas>
-                <div id="progress-text"></div>
+        <div class="container">
+            <div class="controls">
+                <select id="language-select">
+                    <option value="ko">한국어 🇰🇷</option>
+                    <option value="en">English 🇬🇧</option>
+                    <option value="zh">中文 🇨🇳</option>
+                    <option value="ja">日本語 🇯🇵</option>
+                    <option value="es">Español 🇪🇸</option>
+                </select>
+                <button id="theme-toggle" class="theme-toggle-button">☀️</button>
             </div>
-            <p id="question-text"></p>
-            <div id="options-container">
-                <!-- Answer buttons will be dynamically added here -->
+
+            <h1 id="main-title">테토-에겐 성격 유형 테스트 ✨</h1>
+
+            <!-- Gender Selection Section -->
+            <div id="gender-selection-section">
+                <h2 id="gender-selection-title">당신의 성별을 선택해주세요. 🚻</h2>
+                <button id="male-button" class="gender-button">남성 ♂️</button>
+                <button id="female-button" class="gender-button">여성 ♀️</button>
+            </div>
+
+            <!-- Quiz Section (initially hidden) -->
+            <div id="quiz-section" style="display: none;">
+                <div id="progress-container">
+                    <canvas id="progress-canvas" width="80" height="80"></canvas>
+                    <div id="progress-text"></div>
+                </div>
+                <p id="question-text"></p>
+                <div id="options-container">
+                    <!-- Answer buttons will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Result Section (initially hidden) -->
+            <div id="result-section" style="display: none;">
+                <h2 id="result-section-title">당신의 성격 유형은... 🎉</h2>
+                <h3 id="result-type"></h3>
+                <p id="result-description"></p>
+                <button id="restart-button">다시 테스트하기 🔄</button>
             </div>
         </div>
 
-        <!-- Result Section (initially hidden) -->
-        <div id="result-section" style="display: none;">
-            <h2 id="result-section-title">당신의 성격 유형은... 🎉</h2>
-            <h3 id="result-type"></h3>
-            <p id="result-description"></p>
-            <button id="restart-button">다시 테스트하기 🔄</button>
+        <!-- Right Side Kakao AdSense Code -->
+        <div class="side-ad-container" id="right-side-ad">
+            <ins class="kakao_ad_area" style="width:160px; height:600px;"
+            data-ad-unit = "DAN-s1bHzAxaUaIJ21B4"
+            data-ad-width = "160"
+            data-ad-height = "600"></ins>
         </div>
     </div>
 
@@ -391,7 +492,6 @@
         data-ad-unit = "DAN-PKp0vxyL2QolKDIu"
         data-ad-width = "320"
         data-ad-height = "100"></ins>
-        <!-- Removed redundant script tag here -->
     </div>
 
     <script>
